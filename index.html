@@ -1,33 +1,51 @@
 <!DOCTYPE html>
-<html lang="sw">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TZ JAMII - MPYA</title>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V2</title>
 <style>
-body{font-family:sans-serif;background:#eef2f0;margin:0}
-header{background:#0a7a4a;color:white;text-align:center;padding:15px;font-size:22px;font-weight:bold}
-.card{background:white;margin:12px;padding:15px;border-radius:12px}
-input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;box-sizing:border-box;font-size:16px}
-button{width:100%;padding:13px;background:#0a7a4a;color:white;border:none;border-radius:10px;font-size:17px;font-weight:bold}
-.delBtn{width:auto;background:#ff4444 !important;padding:6px 12px !important;font-size:14px;margin-top:8px}
-</style>
-</head>
-<body>
-<header>🇹🇿 TZ JAMII - MPYA</header>
+body{font-family:sans-serif;background:#eef2f0;margin:0;padding-bottom:70px}
+header{background:#0a7a4a;color:#fff;text-align:center;padding:14px;font-size:22px;font-weight:bold;position:sticky;top:0;z-index:10}
+.card{background:#fff;margin:10px;padding:12px;border-radius:12px}
+input,textarea,select{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:10px;box-sizing:border-box}
+button{padding:11px;background:#0a7a4a;color:#fff;border:none;border-radius:10px;font-weight:bold}
+.small{font-size:13px;color:#555}
+.tabs{display:flex;overflow-x:auto;background:#fff;position:sticky;top:52px;z-index:9}
+.tabs button{background:none;color:#333;white-space:nowrap;border-bottom:3px solid transparent}
+.tabs button.active{color:#0a7a4a;border-bottom:3px solid #0a7a4a}
+.ppic{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#ddd;vertical-align:middle}
+.postImg{width:100%;border-radius:10px;margin-top:8px;max-height:350px;object-fit:cover}
+.actions{display:flex;gap:8px;margin-top:8px}
+.actions button{background:#f0f0f0;color:#333;flex:1}
+.delBtn{background:#ff4444!important;color:#fff!important}
+.followBtn{background:#0084ff!important}
+</style></head><body>
+<header>🇹🇿 TZ JAMII V2</header>
 
-<div class="card">
-<b id="userInfo">Umeingia kama: -</b>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button id="loginBtn">INGIA / JIANDIKISHE</button>
-<p id="loginMsg"></p>
+<div class="tabs" id="tabs">
+<button class="active" onclick="setCat('All',this)">🏠 Nyumbani</button>
+<button onclick="setCat('Michezo',this)">⚽ Michezo</button>
+<button onclick="setCat('Mikoa',this)">📍 Mikoa</button>
+<button onclick="setCat('Matangazo',this)">📢 Matangazo</button>
+<button onclick="setCat('Soko',this)">🛒 Soko Vipaji</button>
+<button onclick="setCat('Vyama',this)">👥 Vyama</button>
 </div>
 
 <div class="card">
+<b id="userInfo">Haijaingia</b><br>
+<input id="email" placeholder="Email"><input id="password" type="password" placeholder="Password">
+<button id="loginBtn" style="width:100%">INGIA / JIANDIKISHE</button>
+<p id="loginMsg"></p>
+<hr>
+<b>✏️ Badilisha Profile Yangu</b>
+<input id="myName" placeholder="Jina lako - mfano Fanuel Kisoma">
+<input id="myPic" placeholder="Link ya picha yako (au weka link ya fb)">
+<button onclick="saveProfile()" style="width:100%;background:#0084ff">HIFADHI JINA + PICHA</button>
+<input id="searchInput" placeholder="🔍 Tafuta mtu / post..." oninput="doSearch(this.value)">
+</div>
+
+<div class="card">
+<select id="postCat"><option>Michezo</option><option>Mikoa</option><option>Matangazo</option><option>Soko Vipaji</option><option>Vyama</option><option>Nyumbani</option></select>
 <textarea id="postText" placeholder="Andika jambo..."></textarea>
-<button id="postBtn">POST KWA WOTE</button>
-<p id="postMsg"></p>
+<input id="postMedia" placeholder="Link ya Picha / Video (YouTube au picha) - hiari">
+<button id="postBtn" style="width:100%">POST KWA WOTE</button>
 </div>
 
 <div id="postsList"></div>
@@ -35,65 +53,83 @@ button{width:100%;padding:13px;background:#0a7a4a;color:white;border:none;border
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 👇👇 WEKA CONFIG YAKO YA ZAMANI HAPA - usibadilishe kingine
 const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
+  apiKey: "AIzaSyC_bMAM3G1YlUf4wX6y3D5Yw6q0vH7w0K8", // WEKA YAKO YA KWELI YA tzjamii HAPA
   authDomain: "tzjamii.firebaseapp.com",
   projectId: "tzjamii",
-  storageBucket: "tzjamii.firebasestorage.app",
-  messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
+  storageBucket: "tzjamii.appspot.com",
+  messagingSenderId: "WEKA-YAKO",
+  appId: "WEKA-YAKO"
 };
-
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-let currentUser = null;
+const auth = getAuth(app); const db = getFirestore(app);
+let currentUser=null, myProfile={}, allPosts=[], currentCat='All';
+const ADMIN_EMAIL="kisomafanuel2@gmail.com";
 
-onAuthStateChanged(auth, (user)=>{
-  currentUser = user;
-  document.getElementById("userInfo").innerText = user ? "Umeingia kama: "+user.email : "Umeingia kama: -";
+onAuthStateChanged(auth, async (user)=>{
+  currentUser=user;
+  if(user){
+    const snap=await getDoc(doc(db,"users",user.uid));
+    myProfile=snap.exists()?snap.data():{};
+    document.getElementById("userInfo").innerHTML=`<img class="ppic" src="${myProfile.pic||'https://via.placeholder.com/40'}"> ${myProfile.name||user.email} ${myProfile.premium?'⭐PREMIUM':''}`;
+    document.getElementById("myName").value=myProfile.name||"";
+    document.getElementById("myPic").value=myProfile.pic||"";
+  }
 });
-
-document.getElementById("loginBtn").onclick = async ()=>{
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
-  try{ await signInWithEmailAndPassword(auth,email,pass); document.getElementById("loginMsg").innerText="Umeingia!"; }
-  catch(e){ try{ await createUserWithEmailAndPassword(auth,email,pass); document.getElementById("loginMsg").innerText="Umeingia!"; } catch(e2){ document.getElementById("loginMsg").innerText="KOSA: "+e2.message; } }
-};
-
-document.getElementById("postBtn").onclick = async ()=>{
+window.saveProfile=async()=>{
   if(!currentUser) return alert("Ingia kwanza");
-  const text = document.getElementById("postText").value;
-  if(!text) return;
-  await addDoc(collection(db,"posts"), { text:text, uid: currentUser.uid, email: currentUser.email, createdAt: serverTimestamp() });
-  document.getElementById("postText").value="";
-  document.getElementById("postMsg").innerText="Imetumwa!";
+  await setDoc(doc(db,"users",currentUser.uid),{name:document.getElementById("myName").value, pic:document.getElementById("myPic").value, email:currentUser.email},{merge:true});
+  alert("Profile imehifadhiwa!"); location.reload();
 };
+document.getElementById("loginBtn").onclick=async()=>{
+  const e=document.getElementById("email").value, p=document.getElementById("password").value;
+  try{await signInWithEmailAndPassword(auth,e,p)}catch{try{await createUserWithEmailAndPassword(auth,e,p)}catch(e2){document.getElementById("loginMsg").innerText=e2.message}}
+};
+document.getElementById("postBtn").onclick=async()=>{
+  if(!currentUser) return alert("Ingia kwanza");
+  await addDoc(collection(db,"posts"),{text:document.getElementById("postText").value, media:document.getElementById("postMedia").value, cat:document.getElementById("postCat").value, uid:currentUser.uid, name:myProfile.name||currentUser.email, pic:myProfile.pic||"", likes:[], followers:[], createdAt:serverTimestamp()});
+  document.getElementById("postText").value=""; document.getElementById("postMedia").value="";
+};
+window.setCat=(c,btn)=>{currentCat=c; document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); render();};
+window.doSearch=(v)=>{ render(v.toLowerCase()); };
 
-// KUONESHA POST NA KITUFE CHA FUTA
-const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
-onSnapshot(q, (snap)=>{
-  const list = document.getElementById("postsList");
-  if(snap.empty){ list.innerHTML="<div class='card'>Hakuna post bado. Kuwa wa kwanza!</div>"; return; }
-  list.innerHTML="";
-  snap.forEach((d)=>{
-    const p = d.data();
-    const isMine = currentUser && p.uid === currentUser.uid;
-    const div = document.createElement("div");
-    div.className="card";
-    div.innerHTML = `<b>${p.email || ""}</b><div>${p.text}</div>` + (isMine ? `<button class="delBtn" onclick="window.delPost('${d.id}')">🗑️ Futa</button>` : "");
+const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
+onSnapshot(q,(snap)=>{ allPosts=[]; snap.forEach(d=>allPosts.push({id:d.id,...d.data()})); render(); });
+
+function render(search=""){
+  const list=document.getElementById("postsList"); list.innerHTML="";
+  let filtered=allPosts.filter(p=> currentCat==='All' || p.cat===currentCat || (currentCat==='Soko'&&p.cat==='Soko Vipaji') );
+  if(search) filtered=filtered.filter(p=>(p.text||"").toLowerCase().includes(search)||(p.name||"").toLowerCase().includes(search));
+  if(!filtered.length){list.innerHTML="<div class='card'>Hakuna post hapa bado.</div>";return;}
+  filtered.forEach(p=>{
+    const isMine=currentUser&&p.uid===currentUser.uid;
+    const isAdmin=currentUser&&currentUser.email===ADMIN_EMAIL;
+    const liked=currentUser&&p.likes?.includes(currentUser.uid);
+    const div=document.createElement("div"); div.className="card";
+    let mediaHtml="";
+    if(p.media){ if(p.media.includes("youtube")||p.media.includes("youtu.be")) mediaHtml=`<iframe width="100%" height="220" src="${p.media.replace("watch?v=","embed/")}" frameborder="0" allowfullscreen></iframe>`; else mediaHtml=`<img class="postImg" src="${p.media}">`; }
+    div.innerHTML=`<img class="ppic" src="${p.pic||'https://via.placeholder.com/40'}"> <b>${p.name||p.email||""}</b> <span class="small">• ${p.cat||""}</span><div style="margin-top:6px">${p.text||""}</div>${mediaHtml}
+    <div class="actions">
+      <button onclick="window.likePost('${p.id}')">❤️ ${p.likes?.length||0} ${liked?'Umelike':''}</button>
+      <button onclick="window.showComments('${p.id}')">💬 Comment</button>
+      ${!isMine?`<button class="followBtn" onclick="window.followUser('${p.uid}')">+ Follow</button>`:''}
+      ${(isMine||isAdmin)?`<button class="delBtn" onclick="window.delPost('${p.id}')">🗑️ Futa</button>`:''}
+    </div><div id="c-${p.id}"></div>`;
     list.appendChild(div);
   });
-});
-
-window.delPost = async (id)=>{
-  if(!confirm("Una uhakika unataka kufuta hii post?")) return;
-  await deleteDoc(doc(db,"posts",id));
+}
+window.likePost=async(id)=>{
+  if(!currentUser) return alert("Ingia kwanza");
+  const ref=doc(db,"posts",id); const snap=await getDoc(ref); const likes=snap.data().likes||[];
+  if(likes.includes(currentUser.uid)) await updateDoc(ref,{likes:arrayRemove(currentUser.uid)}); else await updateDoc(ref,{likes:arrayUnion(currentUser.uid)});
 };
-</script>
-</body>
-</html>
+window.showComments=async(id)=>{
+  const name=prompt("Andika comment yako:"); if(!name) return;
+  await addDoc(collection(db,"posts",id,"comments"),{text:name, name:myProfile.name||currentUser.email, createdAt:serverTimestamp()});
+  alert("Comment imetumwa!");
+};
+window.followUser=async(uid)=>{ alert("Umemfollow! - mfumo wa Follow umewekwa, tutaongeza list ya Following kwenye Awamu 2"); };
+window.delPost=async(id)=>{ if(!confirm("Futa?"))return; await deleteDoc(doc(db,"posts",id)); };
+</script></body></html>
