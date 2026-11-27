@@ -100,19 +100,11 @@ window.updateSub=()=>{
   sub.innerHTML=(LISTS[cat]||[]).map(x=>`<option>${x}</option>`).join("");
 };
 updateSub();
+info.innerHTML=`<img class="ppic" src="${myProfile.pic||'https://via.placeholder.com/40'}"> ${myProfile.name||"Mgeni"} • ${myProfile.phone||""} ${isAdmin?'👑 ADMIN':''}`;
+document.getElementById("myName").value=myProfile.name||"";
+document.getElementById("myPhone").value=myProfile.phone||"";
+document.getElementById("myPic").value=myProfile.pic||"";
 
-onAuthStateChanged(auth, async (user)=>{
-  currentUser=user;
-  const info=document.getElementById("userInfo");
-  if(user){
-    const snap=await getDoc(doc(db,"users",user.uid));
-    myProfile=snap.exists()?snap.data():{};
-    const isAdmin=user.email===ADMIN_EMAIL;
-    info.innerHTML=`<img class="ppic" src="${myProfile.pic||'https://via.placeholder.com/40'}"> ${myProfile.name||user.email} ${isAdmin?'👑 ADMIN':''}`;
-    document.getElementById("loginForm").style.display="none";
-    document.getElementById("logoutBtn").style.display="block";
-    document.getElementById("myName").value=myProfile.name||"";
-    document.getElementById("myPic").value=myProfile.pic||"";
   } else {
     info.innerHTML="Haijaingia - Ingia ili upost";
     document.getElementById("loginForm").style.display="block";
