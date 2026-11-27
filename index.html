@@ -121,6 +121,16 @@ window.saveProfile=async()=>{
 };
 document.getElementById("loginBtn").onclick=async()=>{
   const e=document.getElementById("email").value, p=document.getElementById("password").value;
+  if(!e || !p) return alert("Weka Email na Password kwanza!");
+  alert("Najjaribu kuingia na: "+e);
+  try{await signInWithEmailAndPassword(auth,e,p); alert("UMEFANIKIWA KUINGIA!"); location.reload();}
+  catch(err1){
+    alert("Kuingia kumeshindikana: "+err1.message+" - Sasa najaribu kukusajili mpya...");
+    try{await createUserWithEmailAndPassword(auth,e,p); alert("UMESAJILIWA MPYA!"); location.reload();}
+    catch(err2){ alert("KOSA KUBWA: "+err2.message); }
+  }
+};{
+  const e=document.getElementById("email").value, p=document.getElementById("password").value;
   try{await signInWithEmailAndPassword(auth,e,p)}catch{try{await createUserWithEmailAndPassword(auth,e,p)}catch(e2){document.getElementById("loginMsg").innerText=e2.message}}
 };
 document.getElementById("postBtn").onclick=async()=>{
