@@ -1,38 +1,98 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII</title><style>body{font-family:sans-serif;background:#f0f2f5;margin:0}header{background:#007a4d;color:#fff;padding:15px;text-align:center;font-weight:bold} .box{background:#fff;margin:10px;padding:12px;border-radius:10px} input,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box} button{width:100%;padding:12px;background:#007a4d;color:#fff;border:0;border-radius:8px;font-weight:bold} #feed{padding:5px}</style></head><body>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TZ JAMII - MPYA</title>
+<style>
+body{font-family:sans-serif;background:#eef2f0;margin:0}
+header{background:#0a7a4a;color:white;text-align:center;padding:15px;font-size:22px;font-weight:bold}
+.card{background:white;margin:12px;padding:15px;border-radius:12px}
+input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;box-sizing:border-box;font-size:16px}
+button{width:100%;padding:13px;background:#0a7a4a;color:white;border:none;border-radius:10px;font-size:17px;font-weight:bold}
+.delBtn{width:auto;background:#ff4444 !important;padding:6px 12px !important;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
 <header>🇹🇿 TZ JAMII - MPYA</header>
-<div class="box"><b id="status">Haijaingia</b><br><input id="email" placeholder="Email" value="kisomafanuel2@gmail.com"><input id="password" type="password" placeholder="Password"><button id="loginBtn">INGIA / JIANDIKISHE</button><p id="authMsg"></p></div>
-<div class="box"><textarea id="postText" placeholder="Andika jambo..."></textarea><button id="postBtn">POST KWA WOTE</button><p id="postMsg"></p></div>
-<div id="feed">Inapakia...</div>
+
+<div class="card">
+<b id="userInfo">Umeingia kama: -</b>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button id="loginBtn">INGIA / JIANDIKISHE</button>
+<p id="loginMsg"></p>
+</div>
+
+<div class="card">
+<textarea id="postText" placeholder="Andika jambo..."></textarea>
+<button id="postBtn">POST KWA WOTE</button>
+<p id="postMsg"></p>
+</div>
+
+<div id="postsList"></div>
+
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",authDomain:"tzjamii.firebaseapp.com",projectId:"tzjamii",storageBucket:"tzjamii.firebasestorage.app",messagingSenderId:"210377984835",appId:"1:210377984835:web:cfc328a7c3e9e389f2fdf6",measurementId:"G-KZ5M48VLDJ"};
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app); const db=getFirestore(app);
-let user=null;
-onAuthStateChanged(auth,u=>{user=u; document.getElementById('status').textContent = u ? "Umeingia kama: "+u.email : "Haijaingia";});
-document.getElementById('loginBtn').onclick=async()=>{
- const e=document.getElementById('email').value.trim();
- const p=document.getElementById('password').value.trim();
- document.getElementById('authMsg').textContent="Inajaribu...";
- try{ await signInWithEmailAndPassword(auth,e,p); document.getElementById('authMsg').textContent="Umeingia!"; }
- catch(err1){ try{ await createUserWithEmailAndPassword(auth,e,p); document.getElementById('authMsg').textContent="Akaunti mpya imeundwa!"; } catch(err2){ document.getElementById('authMsg').textContent="KOSA: "+err2.message; alert(err2.message); } }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 👇👇 WEKA CONFIG YAKO YA ZAMANI HAPA - usibadilishe kingine
+const firebaseConfig = {
+  apiKey: "WEKA-APK-KEY-YAKO",
+  authDomain: "WEKA-HAPA",
+  projectId: "WEKA-HAPA",
+  storageBucket: "WEKA-HAPA",
+  messagingSenderId: "WEKA-HAPA",
+  appId: "WEKA-HAPA"
 };
-document.getElementById('postBtn').onclick=async()=>{
- if(!user) return alert("Ingia kwanza");
- const t=document.getElementById('postText').value.trim(); if(!t) return alert("Andika kwanza");
- try{ await addDoc(collection(db,"posts"),{text:t,author:user.email,createdAt:serverTimestamp()}); document.getElementById('postText').value=""; document.getElementById('postMsg').textContent="Imetumwa!"; }catch(e){ alert("KOSA POST: "+e.message); }
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+
+onAuthStateChanged(auth, (user)=>{
+  currentUser = user;
+  document.getElementById("userInfo").innerText = user ? "Umeingia kama: "+user.email : "Umeingia kama: -";
+});
+
+document.getElementById("loginBtn").onclick = async ()=>{
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+  try{ await signInWithEmailAndPassword(auth,email,pass); document.getElementById("loginMsg").innerText="Umeingia!"; }
+  catch(e){ try{ await createUserWithEmailAndPassword(auth,email,pass); document.getElementById("loginMsg").innerText="Umeingia!"; } catch(e2){ document.getElementById("loginMsg").innerText="KOSA: "+e2.message; } }
 };
-const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
-onSnapshot(q,(snap)=>{
- const feed=document.getElementById('feed'); feed.innerHTML="";
- if(snap.empty){ feed.innerHTML="Hakuna post bado. Kuwa wa kwanza!"; return; }
- snap.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='box'; div.innerHTML="<b>"+(p.author||"Mtu")+"</b><br>"+p.text; feed.appendChild(div); });
-},(err)=>{ document.getElementById('feed').innerHTML="<b style='color:red'>KOSA FIREBASE: "+err.message+"</b>"; });
-async function deletePost(id){
+
+document.getElementById("postBtn").onclick = async ()=>{
+  if(!currentUser) return alert("Ingia kwanza");
+  const text = document.getElementById("postText").value;
+  if(!text) return;
+  await addDoc(collection(db,"posts"), { text:text, uid: currentUser.uid, email: currentUser.email, createdAt: serverTimestamp() });
+  document.getElementById("postText").value="";
+  document.getElementById("postMsg").innerText="Imetumwa!";
+};
+
+// KUONESHA POST NA KITUFE CHA FUTA
+const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
+onSnapshot(q, (snap)=>{
+  const list = document.getElementById("postsList");
+  if(snap.empty){ list.innerHTML="<div class='card'>Hakuna post bado. Kuwa wa kwanza!</div>"; return; }
+  list.innerHTML="";
+  snap.forEach((d)=>{
+    const p = d.data();
+    const isMine = currentUser && p.uid === currentUser.uid;
+    const div = document.createElement("div");
+    div.className="card";
+    div.innerHTML = `<b>${p.email || ""}</b><div>${p.text}</div>` + (isMine ? `<button class="delBtn" onclick="window.delPost('${d.id}')">🗑️ Futa</button>` : "");
+    list.appendChild(div);
+  });
+});
+
+window.delPost = async (id)=>{
   if(!confirm("Una uhakika unataka kufuta hii post?")) return;
-  await deleteDoc(doc(db, "posts", id));
-  alert("Imefutika!");
-}
-</script></body></html>
+  await deleteDoc(doc(db,"posts",id));
+};
+</script>
+</body>
+</html>
