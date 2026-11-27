@@ -1,88 +1,33 @@
-<!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TZ JAMII - Mpya</title>
-<style>
-body{font-family:sans-serif;background:#f0f2f5;margin:0;padding:0}
-header{background:#0a7a5c;color:#fff;padding:14px;text-align:center;font-weight:900;font-size:22px}
-.box{background:#fff;margin:12px;padding:14px;border-radius:12px;box-shadow:0 1px 4px #0002}
-input,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box;font-size:15px}
-button{background:#0a7a5c;color:#fff;border:0;padding:12px;border-radius:10px;font-weight:800;width:100%;cursor:pointer}
-.post{background:#fff;margin:12px;padding:14px;border-radius:12px}
-small{color:#777}
-</style></head>
-<body>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII</title><style>body{font-family:sans-serif;background:#f0f2f5;margin:0}header{background:#007a4d;color:#fff;padding:15px;text-align:center;font-weight:bold} .box{background:#fff;margin:10px;padding:12px;border-radius:10px} input,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box} button{width:100%;padding:12px;background:#007a4d;color:#fff;border:0;border-radius:8px;font-weight:bold} #feed{padding:5px}</style></head><body>
 <header>🇹🇿 TZ JAMII - MPYA</header>
-<div class="box" id="authBox">
-<b>Ingia ili upost</b>
-<input id="email" placeholder="Email yako">
-<input id="pass" type="password" placeholder="Password">
-<button id="loginBtn">INGIA / JIANDIKISHE</button>
-<p id="authMsg"></p>
-</div>
-<div class="box">
-<textarea id="postText" placeholder="Andika jambo kwa Watanzania wote..."></textarea>
-<button id="postBtn">POST KWA WOTE</button>
-<p id="postMsg"></p>
-</div>
-<div id="feed"><p style="text-align:center">Inapakia post za Tanzania...</p></div>
-
+<div class="box"><b id="status">Haijaingia</b><br><input id="email" placeholder="Email" value="kisomafanuel2@gmail.com"><input id="password" type="password" placeholder="Password"><button id="loginBtn">INGIA / JIANDIKISHE</button><p id="authMsg"></p></div>
+<div class="box"><textarea id="postText" placeholder="Andika jambo..."></textarea><button id="postBtn">POST KWA WOTE</button><p id="postMsg"></p></div>
+<div id="feed">Inapakia...</div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// WEKA CONFIG YAKO HAPA - copy kutoka App ya zamani
-const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
-  authDomain: "tzjamii.firebaseapp.com",
-  projectId: "tzjamii",
-  storageBucket: "tzjamii.firebasestorage.app",
-  messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
+import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",authDomain:"tzjamii.firebaseapp.com",projectId:"tzjamii",storageBucket:"tzjamii.firebasestorage.app",messagingSenderId:"210377984835",appId:"1:210377984835:web:cfc328a7c3e9e389f2fdf6",measurementId:"G-KZ5M48VLDJ"};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app); const db=getFirestore(app);
+let user=null;
+onAuthStateChanged(auth,u=>{user=u; document.getElementById('status').textContent = u ? "Umeingia kama: "+u.email : "Haijaingia";});
+document.getElementById('loginBtn').onclick=async()=>{
+ const e=document.getElementById('email').value.trim();
+ const p=document.getElementById('password').value.trim();
+ document.getElementById('authMsg').textContent="Inajaribu...";
+ try{ await signInWithEmailAndPassword(auth,e,p); document.getElementById('authMsg').textContent="Umeingia!"; }
+ catch(err1){ try{ await createUserWithEmailAndPassword(auth,e,p); document.getElementById('authMsg').textContent="Akaunti mpya imeundwa!"; } catch(err2){ document.getElementById('authMsg').textContent="KOSA: "+err2.message; alert(err2.message); } }
 };
-  
+document.getElementById('postBtn').onclick=async()=>{
+ if(!user) return alert("Ingia kwanza");
+ const t=document.getElementById('postText').value.trim(); if(!t) return alert("Andika kwanza");
+ try{ await addDoc(collection(db,"posts"),{text:t,author:user.email,createdAt:serverTimestamp()}); document.getElementById('postText').value=""; document.getElementById('postMsg').textContent="Imetumwa!"; }catch(e){ alert("KOSA POST: "+e.message); }
 };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let user = null;
-onAuthStateChanged(auth, u=>{
-  user = u;
-  document.getElementById('authMsg').textContent = u ? "Umeingia kama: "+u.email : "Haujaingia bado";
-});
-
-document.getElementById('loginBtn').onclick = async ()=>{
-  const e=document.getElementById('email').value, p=document.getElementById('pass').value;
-  if(!e||!p) return alert("Weka email na password");
-  try{ await signInWithEmailAndPassword(auth,e,p); }
-  catch(err){ try{ await createUserWithEmailAndPassword(auth,e,p); alert("Akaunti mpya imeundwa!"); }catch(e2){ alert(e2.message); } }
-};
-
-document.getElementById('postBtn').onclick = async ()=>{
-  if(!user) return alert("Ingia kwanza");
-  const t=document.getElementById('postText').value.trim();
-  if(!t) return alert("Andika kwanza");
-  await addDoc(collection(db,"posts"),{text:t, author:user.email, createdAt:serverTimestamp()});
-  document.getElementById('postText').value="";
-  document.getElementById('postMsg').textContent="Imepost! Watu wote wataona.";
-};
-
-// HAPA NDIPO KILA MTU ANAONA POST ZA WOTE - KUTOKA FIRESTORE, SIO SIMU YAKO
-const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
-onSnapshot(q, (snap)=>{
-  const feed=document.getElementById('feed');
-  feed.innerHTML = "";
-  if(snap.empty){ feed.innerHTML = "<p style='text-align:center'>Hakuna post bado. Kuwa wa kwanza!</p>"; return; }
-  snap.forEach(d=>{
-    const p = d.data();
-    const div=document.createElement('div');
-    div.innerHTML="<b>"+(p.author||"MtanZania")+"</b><br>"+p.text;
-    feed.appendChild(div);
-  });
-}, (err)=>{
-  document.getElementById('feed').innerHTML = "<b style='color:red'>KOSA: " + err.message + "</b>";
-});
-</script>
-</body></html>
+const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
+onSnapshot(q,(snap)=>{
+ const feed=document.getElementById('feed'); feed.innerHTML="";
+ if(snap.empty){ feed.innerHTML="Hakuna post bado. Kuwa wa kwanza!"; return; }
+ snap.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='box'; div.innerHTML="<b>"+(p.author||"Mtu")+"</b><br>"+p.text; feed.appendChild(div); });
+},(err)=>{ document.getElementById('feed').innerHTML="<b style='color:red'>KOSA FIREBASE: "+err.message+"</b>"; });
+</script></body></html>
