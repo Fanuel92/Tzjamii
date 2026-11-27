@@ -71,16 +71,18 @@ document.getElementById('postBtn').onclick = async ()=>{
 
 // HAPA NDIPO KILA MTU ANAONA POST ZA WOTE - KUTOKA FIRESTORE, SIO SIMU YAKO
 const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
-onSnapshot(q, snap=>{
+onSnapshot(q, (snap)=>{
   const feed=document.getElementById('feed');
-  if(snap.empty){ feed.innerHTML="<p style='text-align:center'>Hakuna post bado. Kuwa wa kwanza!</p>"; return; }
-  feed.innerHTML="";
+  feed.innerHTML = "";
+  if(snap.empty){ feed.innerHTML = "<p style='text-align:center'>Hakuna post bado. Kuwa wa kwanza!</p>"; return; }
   snap.forEach(d=>{
-    const p=d.data();
-    const div=document.createElement('div'); div.className='post';
-    div.innerHTML="<b>"+(p.author||"MtanZania")+"</b><br>"+p.text+"<br><small>"+new Date().toLocaleString()+"</small>";
+    const p = d.data();
+    const div=document.createElement('div');
+    div.innerHTML="<b>"+(p.author||"MtanZania")+"</b><br>"+p.text;
     feed.appendChild(div);
   });
+}, (err)=>{
+  document.getElementById('feed').innerHTML = "<b style='color:red'>KOSA: " + err.message + "</b>";
 });
 </script>
 </body></html>
