@@ -70,6 +70,27 @@ button{padding:11px;background:#0a7a4a;color:#fff;border:none;border-radius:10px
 <div id="postsList"></div>
 
 <script type="module">
+ window.ingiaSasa=async()=>{
+  alert("Button inafanya kazi! Najaribu...");
+  const name=document.getElementById("myName").value.trim();
+  const phone=document.getElementById("myPhone").value.trim();
+  const pic=document.getElementById("myPic") ? document.getElementById("myPic").value.trim() : "";
+  const p=document.getElementById("password").value;
+  if(!name || !phone || !p){ alert("Jaza Jina, Namba na Password!"); return; }
+  if(p.length < 6){ alert("Password iwe 6+ mfano 123456"); return; }
+  const fakeEmail=phone+"@tzjamii.com";
+  try{
+    await signInWithEmailAndPassword(auth,fakeEmail,p);
+    alert("UMEFANIKIWA KUINGIA!");
+  }catch(e){
+    try{
+      const cred=await createUserWithEmailAndPassword(auth,fakeEmail,p);
+      await setDoc(doc(db,"users",cred.user.uid),{name:name, phone:phone, pic:pic, email:fakeEmail});
+      alert("UMESAJILIWA! Karibu "+name);
+    }catch(e2){ alert("KOSA: "+e2.message); return; }
+  }
+  location.reload();
+}; 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
