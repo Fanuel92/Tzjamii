@@ -124,20 +124,22 @@ window.saveProfile=async()=>{
 };
 document.getElementById("loginBtn").onclick=async()=>{
   const name=document.getElementById("myName").value.trim();
-  const phone=document.getElementById("myPhone").value.trim().replace(/\s/g,"");
+  const phone=document.getElementById("myPhone").value.trim();
   const pic=document.getElementById("myPic").value.trim();
   const p=document.getElementById("password").value;
-  if(!name || !phone || !p) return alert("Jaza Jina, Namba ya Simu na Password!");
-  const fakeEmail=phone+"@tzjamii.com"; // Email ya siri - user haioni
+  if(!name || !phone || !p){ alert("Jaza Jina, Namba na Password!"); return; }
+  if(p.length < 6){ alert("Password iwe angalau herufi 6, mfano 123456"); return; }
+  const fakeEmail=phone+"@tzjamii.com";
+  alert("Najaribu kuingia kama: "+fakeEmail);
   try{
     await signInWithEmailAndPassword(auth,fakeEmail,p);
     alert("UMEFANIKIWA KUINGIA!");
-  }catch{
+  }catch(e){
     try{
       const cred=await createUserWithEmailAndPassword(auth,fakeEmail,p);
       await setDoc(doc(db,"users",cred.user.uid),{name:name, phone:phone, pic:pic, email:fakeEmail});
       alert("UMESAJILIWA! Karibu "+name);
-    }catch(e2){ alert("KOSA: "+e2.message); }
+    }catch(e2){ alert("KOSA: "+e2.message); return; }
   }
   location.reload();
 };
