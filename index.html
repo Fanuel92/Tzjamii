@@ -30,4 +30,9 @@ onSnapshot(q,(snap)=>{
  if(snap.empty){ feed.innerHTML="Hakuna post bado. Kuwa wa kwanza!"; return; }
  snap.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='box'; div.innerHTML="<b>"+(p.author||"Mtu")+"</b><br>"+p.text; feed.appendChild(div); });
 },(err)=>{ document.getElementById('feed').innerHTML="<b style='color:red'>KOSA FIREBASE: "+err.message+"</b>"; });
+async function deletePost(id){
+  if(!confirm("Una uhakika unataka kufuta hii post?")) return;
+  await deleteDoc(doc(db, "posts", id));
+  alert("Imefutika!");
+}
 </script></body></html>
