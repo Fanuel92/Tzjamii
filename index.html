@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="sw"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V9 - Na Icon</title>
+<!DOCTYPE html><html lang="sw"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V11 - FOLLOW FIXED</title>
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="shortcut icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="TZ JAMII">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href='data:application/manifest+json,[STRIPPED] JAMII","short_name":"TZ JAMII","display":"standalone","background_color":"%23043d14","theme_color":"%23043d14","icons":[{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"TZ JAMII","short_name":"TZ JAMII","display":"standalone","background_color":"%23043d14","theme_color":"%23043d14","icons":[{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -56,7 +56,7 @@ input[type=file]{display:none}img.media,video.media{width:100%;border-radius:10p
 <button class="btn" id="pubBtn">CHAPISHA</button><button class="btn2" id="clearBtn">Futa</button><button class="btn2" id="reportBtn">🚩 Ripoti</button></div>
 <div class="small" style="margin-top:6px">Picha kubwa zinabanwa. Video kubwa hadi 500MB IndexedDB. Ukivunja sheria, Admin anakufungia.</div></div><div id="feed"></div>
 <div class="card small"><b>TZ JAMII - Sera Fupi:</b> No matusi, no uchi, no wizi, no siasa za chuki. <a href="#" id="seraLink2">Soma Sera Kamili →</a> | <a href="#" id="tangazaLink2">Tangaza Biashara →</a> | Malipo: Mix by Yas 0656287155 / Halotel 0628287155</div></div>
-<div class="modal" id="authModal"><div class="box"><h3>Ingia / Jiunge</h3><input id="aName" placeholder="Jina kamili"><input id="aPhone" placeholder="Namba ya simu"><input id="aEmail" placeholder="Email yako (kwa Firebase - mf: juma@gmail.com)"><input id="aPass" type="password" placeholder="Password (herufi 6+)"><div id="authMsg" class="small" style="color:#d32f2f"></div><button class="btn" id="doAuthBtn" style="width:100%">INGIA / JIUNGE NA FIREBASE</button><p class="small">Admin: Jina <b>Admin</b> - Password unayoweka V5 (default <b>admin123</b> - BADILISHA mara moja!).<br>Ukiwa umefungiwa, huwezi kuingia.</p><button class="btn2" id="closeAuth">Funga</button></div></div>
+<div class="modal" id="authModal"><div class="box"><h3>Ingia / Jiunge</h3><input id="aName" placeholder="Jina kamili"><input id="aPhone" placeholder="Namba ya simu"><input id="aEmail" placeholder="Email yako (kwa Firebase - mf: juma@gmail.com)"><input id="aPass" type="password" placeholder="Password (herufi 6+)"><div id="authMsg" class="small" style="color:#d32f2f"></div><button class="btn" id="doAuthBtn" style="width:100%">INGIA / JIUNGE NA FIREBASE</button><p class="small">Ukiwa umefungiwa, huwezi kuingia. Password lazima iwe herufi 6 au zaidi.</p><button class="btn2" id="closeAuth">Funga</button></div></div>
 <div class="modal" id="adminModal"><div class="box" style="max-width:520px"><h3>🛡 ADMIN PANEL - Mamlaka Kamili</h3>
 <div><button class="tabBtn on" data-tab="users">👥 Watumiaji</button><button class="tabBtn" data-tab="posts">📝 Post Zote</button><button class="tabBtn" data-tab="banned">🚫 Waliofungiwa</button><button class="tabBtn" data-tab="members">🪪 Wanachama</button><button class="tabBtn" data-tab="ads">💰 Matangazo / Malipo</button><button class="tabBtn" data-tab="sec">🔐 Usalama</button></div>
 <div id="adminContent" style="margin-top:10px"></div><button class="btn2" id="closeAdmin">Funga</button></div></div>
@@ -84,7 +84,6 @@ input[type=file]{display:none}img.media,video.media{width:100%;border-radius:10p
 <div class="modal" id="notifModal"><div class="box"><h3>🔔 Notifications Zako</h3><div id="notifList"></div><button class="btn2" id="closeNotif">Funga - Zimesomwa ✅</button></div></div>
 <div id="viewer"><div id="viewerContent" style="width:100%;text-align:center"></div></div>
 <script>
-// ===== FIREBASE CONFIG - IMEWEKWA NA FANUEL KISOMA - USIBADILISHE =====
 const firebaseConfig = {
   apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
   authDomain: "tzjamii.firebaseapp.com",
@@ -95,30 +94,30 @@ const firebaseConfig = {
   measurementId: "G-KZ5M48VLDJ"
 };
 let firebaseApp=null, auth=null, dbFire=null, firebaseReady=false;
-try{
-  firebaseApp = firebase.initializeApp(firebaseConfig);
-  auth = firebase.auth();
-  dbFire = firebase.firestore();
-  firebaseReady = true;
-  console.log("Firebase TZ JAMII imeunganishwa ✅");
-}catch(e){ console.log("Firebase error:", e.message); firebaseReady=false; }
-async function syncPostsToFirebase(){
+try{ firebaseApp = firebase.initializeApp(firebaseConfig); auth = firebase.auth(); dbFire = firebase.firestore(); firebaseReady = true; }catch(e){ firebaseReady=false; }
+function savePosts(){ SV("tzjamii_posts_v5", posts); }
+// V11 - FOLLOWS ZOTE KWENYE FIRESTORE
+let allFollows = LS("tzjamii_follows",[]);
+function listenFollows(){
   if(!firebaseReady) return;
-  try{ await dbFire.collection("posts").doc("main").set({posts: posts, updated: new Date().toISOString()}); }catch(e){}
+  dbFire.collection("follows").onSnapshot(function(snap){
+    let arr=[]; snap.forEach(function(d){ arr.push(d.data()); });
+    allFollows = arr; SV("tzjamii_follows", arr);
+  }, function(e){});
 }
-async function loadPostsFromFirebase(){
-  if(!firebaseReady) return false;
-  try{
-    let doc = await dbFire.collection("posts").doc("main").get();
-    if(doc.exists && doc.data().posts && doc.data().posts.length){
-      posts = doc.data().posts; savePosts(); return true;
-    }
-  }catch(e){ console.log("Load Firebase:", e.message); }
-  return false;
+function listenPosts(){
+  if(!firebaseReady){ render(); return; }
+  dbFire.collection("posts").orderBy("id","desc").limit(100).onSnapshot(function(snap){
+    let arr=[]; snap.forEach(function(doc){ arr.push(doc.data()); });
+    if(arr.length){ posts = arr; SV("tzjamii_posts_v5", posts); }
+    render();
+  }, function(e){ render(); });
 }
+async function deletePostFromFirebase(id){ if(!firebaseReady) return; try{ await dbFire.collection("posts").doc(String(id)).delete(); }catch(e){} }
+async function updatePostInFirebase(post){ if(!firebaseReady) return; try{ await dbFire.collection("posts").doc(String(post.id)).set(post); }catch(e){} }
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').style.display='inline-block';});
-document.getElementById('installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{alert('Kwenye Chrome: Bonyeza ⋮ juu kulia > Add to Home Screen > Install. Icon ya TZ JAMII itaonekana kwenye simu yako.');}};
+document.getElementById('installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{alert('Kwenye Chrome: Bonyeza ⋮ juu kulia > Add to Home Screen > Install.');}};
 const SECTIONS=[["Jamii","🏠 Jamii"],["Mikoa","🗺️ Mikoa"],["Mziki","🎵 Mziki"],["Movies","🎬 Movies"],["Soko","🛒 Soko"],["Michezo","⚽ Michezo"],["Vyama","🏛 Vyama"],["Matangazo","📢 Matangazo"],["Vipaji","⭐ Vipaji"]];
 const MIKOA=["Dar es Salaam","Arusha","Dodoma","Mwanza","Mbeya","Morogoro","Tanga","Kilimanjaro","Mtwara","Lindi","Ruvuma","Iringa","Njombe","Singida","Tabora","Kigoma","Shinyanga","Simiyu","Geita","Kagera","Mara","Manyara","Pwani","Rukwa","Katavi","Songwe","Pemba Kaskazini","Pemba Kusini","Mjini Magharibi","Kaskazini Unguja","Kusini Unguja"];
 const MICHEZO=["Mpira wa Miguu","Mpira wa Kikapu","Voliboli","Raga","Tenisi","Ngumi","Riadha","Kuogelea","Mpira wa Meza"];
@@ -129,25 +128,24 @@ let cur="Jamii", sub="", pendingBlob=null, pendingType="", adminTab="users";
 function LS(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
 function SV(k,v){localStorage.setItem(k,JSON.stringify(v))}
 let posts=LS("tzjamii_posts_v5",[]);
-if(!posts.length){posts=[{id:1,section:"Mikoa",sub:"Dar es Salaam",author:"Anna - Dar",init:"AM",color:"#1e88e5",text:"Dar leo joto kali!",likes:120,comments:[],time:"Saa 2",mediaId:null,mediaType:""},{id:2,section:"Michezo",sub:"Simba SC",author:"Juma - Simba",init:"JM",color:"#e53935",text:"Simba tunashinda!",likes:210,comments:[],time:"Saa 1",mediaId:null,mediaType:""},{id:3,section:"Vipaji",sub:"Kuimba",author:"Neema",init:"NM",color:"#8e24aa",text:"Wimbo mpya!",likes:88,comments:[],time:"Saa 4",mediaId:null,mediaType:""}];SV("tzjamii_posts_v5",posts)}
-function savePosts(){SV("tzjamii_posts_v5",posts); syncPostsToFirebase();}
+if(!posts.length){posts=[{id:1,section:"Mikoa",sub:"Dar es Salaam",author:"Anna - Dar",init:"AM",color:"#1e88e5",text:"Dar leo joto kali!",likes:120,comments:[],time:"Saa 2",mediaId:null,mediaType:""},{id:2,section:"Michezo",sub:"Simba SC",author:"Juma - Simba",init:"JM",color:"#e53935",text:"Simba tunashinda!",likes:210,comments:[],time:"Saa 1",mediaId:null,mediaType:""},{id:3,section:"Vipaji",sub:"Kuimba",author:"Neema",init:"NM",color:"#8e24aa",text:"Wimbo mpya!",likes:88,comments:[],time:"Saa 4",mediaId:null,mediaType:""}];}
 function getAdminPass(){return localStorage.getItem("tzjamii_admin_pass")||"admin123"}
 function getBanned(){return LS("tzjamii_banned",[])}
 function getPremium(){return LS("tzjamii_premium",[])}
 function isBanned(phone,name){return getBanned().some(function(b){return b.phone===phone||b.name===name})}
 function isPremium(phone){return getPremium().includes(phone)}
 function getNotifs(){return LS("tzjamii_notifs",[])}
-function getFollows(){return LS("tzjamii_follows",[])}
-function cleanName(a){return a.replace(" (Admin)","").replace(" (Tangazo Lililolipwa)","")}
+function getFollows(){return allFollows.length?allFollows:LS("tzjamii_follows",[])}
+function cleanName(a){return (a||"").replace(" (Admin)","").replace(" (Tangazo Lililolipwa)","")}
 function addNotif(toName,toPhone,fromName,text){let n=getNotifs();n.unshift({to:toName,toPhone:toPhone||"",from:fromName,text:text,time:new Date().toLocaleString(),read:false});SV("tzjamii_notifs",n);updateNotifBadge()}
 function updateNotifBadge(){let u=getUser();let el=document.getElementById("notifCount");if(!u){el.style.display="none";return}let c=getNotifs().filter(function(n){return !n.read&&(n.to===u.name||(u.phone&&n.toPhone===u.phone))}).length;el.textContent=c;el.style.display=c>0?"inline-block":"none"}
-function isFollowing(targetName){let u=getUser();if(!u)return false;return getFollows().some(function(f){return f.by===u.name&&f.target===targetName})}
+function isFollowing(targetName){let u=getUser();if(!u)return false;return getFollows().some(function(f){return cleanName(f.by)===cleanName(u.name)&&cleanName(f.target)===cleanName(targetName)})}
 function profKey(name,phone){return "prof_"+(phone||name).replace(/[^0-9a-zA-Z]/g,"_")}
 async function getProfPicUrl(name,phone){let b=await dbGet(profKey(name,phone));if(!b)return null;return URL.createObjectURL(b)}
 async function setProfPic(name,phone,blob){let id=profKey(name,phone);await dbPut(id,blob)}
 function dbDel(id){return new Promise(function(res){if(!db)return res();let t=db.transaction("media","readwrite");t.objectStore("media").delete(id);t.oncomplete=res;t.onerror=res})}
-let db=null;let req=indexedDB.open("tzjamii_db_v5",1);req.onupgradeneeded=function(e){e.target.result.createObjectStore("media",{keyPath:"id"})};req.onsuccess=async function(e){db=e.target.result; await loadPostsFromFirebase(); render()};req.onerror=function(){render()};
-function dbPut(id,b){return new Promise(function(res,rej){let t=db.transaction("media","readwrite");t.objectStore("media").put({id:id,blob:b});t.oncomplete=res;t.onerror=rej})}
+let db=null;let req=indexedDB.open("tzjamii_db_v5",1);req.onupgradeneeded=function(e){e.target.result.createObjectStore("media",{keyPath:"id"})};req.onsuccess=async function(e){db=e.target.result; listenPosts(); listenFollows();};req.onerror=function(){ listenPosts(); listenFollows(); };
+function dbPut(id,b){return new Promise(function(res,rej){if(!db) return rej("no db"); let t=db.transaction("media","readwrite");t.objectStore("media").put({id:id,blob:b});t.oncomplete=res;t.onerror=rej})}
 function dbGet(id){return new Promise(function(res){if(!db)return res(null);let t=db.transaction("media","readonly");let r=t.objectStore("media").get(id);r.onsuccess=function(){res(r.result?r.result.blob:null)};r.onerror=function(){res(null)}})}
 function getUser(){try{return JSON.parse(localStorage.getItem("tzjamii_user")||"null")}catch(e){return null}}
 function getMembers(){return LS("tzjamii_members",[])}
@@ -163,118 +161,30 @@ document.getElementById("premBtn").onclick=function(){document.getElementById("p
 document.getElementById("closeAuth").onclick=closeAll;document.getElementById("closeAdmin").onclick=closeAll;document.getElementById("closeChama").onclick=closeAll;document.getElementById("closeSera").onclick=closeAll;document.getElementById("closeTangaza").onclick=closeAll;document.getElementById("closePrem").onclick=closeAll;
 document.getElementById("closeSearch").onclick=closeAll;document.getElementById("closeProfile").onclick=closeAll;document.getElementById("closeNotif").onclick=function(){let u=getUser();if(u){let ns=getNotifs();ns.forEach(function(n){if(n.to===u.name||(u.phone&&n.toPhone===u.phone))n.read=true});SV("tzjamii_notifs",ns);updateNotifBadge()}closeAll()};
 document.getElementById("profileBtn").onclick=function(){let u=getUser();if(!u){document.getElementById("authModal").classList.add("open");return}openProfile(u.name,u.phone)};
-document.getElementById("notifBtn").onclick=function(){let u=getUser();if(!u){document.getElementById("authModal").classList.add("open");return}let list=getNotifs().filter(function(n){return n.to===u.name||(u.phone&&n.toPhone===u.phone)});document.getElementById("notifList").innerHTML=list.length?list.map(function(n){return "<div class='card "+(n.read?"":"notifUnread")+"'><b>"+n.from+"</b>: "+n.text+"<div class='small'>"+n.time+"</div></div>"}).join(""):"<div class='card'>Hakuna notification bado. Mtu akikulike / akikujibu / akikufollow utaona hapa.</div>";document.getElementById("notifModal").classList.add("open");let ns=getNotifs();ns.forEach(function(n){if(n.to===u.name||(u.phone&&n.toPhone===u.phone))n.read=true});SV("tzjamii_notifs",ns);updateNotifBadge()};
-async function openProfile(name,phone){let uname=cleanName(name);let myPosts=posts.filter(function(p){return cleanName(p.author)===uname});let likes=myPosts.reduce(function(s,p){return s+p.likes},0);let mem=getMembers().filter(function(m){return m.name===uname||(phone&&m.phone===phone)});let users=LS("tzjamii_users",[]);let uobj=users.find(function(x){return x.name===uname});let uphone=phone||(uobj?uobj.phone:"");let followers=getFollows().filter(function(f){return f.target===uname}).length;let following=getFollows().filter(function(f){return f.by===uname}).length;let me=getUser();let isMe=me&&me.name===uname;let fol=isFollowing(uname);let picUrl=await getProfPicUrl(uname,uphone);let picHtml=picUrl?('<img class="profPic" src="'+picUrl+'">'):("<div class='avatar' style='width:90px;height:90px;font-size:32px;margin:auto'>"+uname.slice(0,2).toUpperCase()+"</div>");
-document.getElementById("profileContent").innerHTML="<div style='text-align:center'>"+picHtml+"<h3>"+uname+(isPremium(uphone)?" ⭐ PREMIUM":"")+"</h3><p class='small'>"+(uphone?("Simu: "+uphone+" • "):"")+(mem.length?("Vyama: "+mem.map(function(m){return m.chama}).join(", ")):"Hana chama bado")+"</p><p><b>"+myPosts.length+"</b> Post • <b>"+likes+"</b> Likes • <b>"+followers+"</b> Followers • <b>"+following+"</b> Anawafuata</p>"+(isMe?"<label class='file'>📷 Badilisha Picha ya Profile<input type='file' id='profFileInp' accept='image/*'></label><br><button class='btn2' id='delProfPic'>🗑 Ondoa Picha</button><p class='small'>Hii ni Profile Yako ✅</p><button class='btn2' id='myLogout'>Toka (Log Out)</button>":("<button class='btn' id='followBtn'>"+(fol?"✅ Unamfollow - Bonyeza Kuunfollow":"➕ Mfollow")+"</button>"))+"</div><hr><b>Post zake:</b><div id='profPosts'></div>";
-document.getElementById("profileModal").classList.add("open");
-let pp=document.getElementById("profPosts");pp.innerHTML=myPosts.length?myPosts.map(function(p){return "<div class='card'><b>"+p.section+(p.sub?" • "+p.sub:"")+"</b><p>"+p.text.slice(0,120)+"</p><div class='small'>❤️ "+p.likes+" • 💬 "+p.comments.length+" • "+p.time+"</div></div>"}).join(""):"<p class='small'>Hana post bado.</p>";
-let fb=document.getElementById("followBtn");if(fb)fb.onclick=function(){let me2=getUser();if(!me2){document.getElementById("authModal").classList.add("open");return}let fl=getFollows();if(fol){fl=fl.filter(function(f){return !(f.by===me2.name&&f.target===uname)});SV("tzjamii_follows",fl);alert("Umeunfollow "+uname)}else{fl.push({by:me2.name,target:uname});SV("tzjamii_follows",fl);addNotif(uname,uphone,me2.name,"amekufollow ➕");alert("Umimfollow "+uname+" ✅")}closeAll();openProfile(uname,uphone)};
-let lo=document.getElementById("myLogout");if(lo)lo.onclick=async function(){if(firebaseReady){try{await auth.signOut();}catch(e){}}localStorage.removeItem("tzjamii_user");closeAll();updateUserLine();render();alert("Umetoka")};
-let pf=document.getElementById("profFileInp");if(pf)pf.addEventListener("change",async function(e){let f=e.target.files[0];if(!f)return;let bmp=await createImageBitmap(f);let max=400,sc=Math.min(1,max/Math.max(bmp.width,bmp.height));let c=document.createElement("canvas");c.width=bmp.width*sc;c.height=bmp.height*sc;c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);let blob=await new Promise(function(r){c.toBlob(r,"image/jpeg",0.85)});await setProfPic(uname,uphone,blob);alert("✅ Picha ya Profile imewekwa!");closeAll();openProfile(uname,uphone);render()});
-let dp=document.getElementById("delProfPic");if(dp)dp.onclick=async function(){await dbDel(profKey(uname,uphone));alert("Picha imeondolewa");closeAll();openProfile(uname,uphone);render()};
-}
-function doSearch(q){q=q.trim().toLowerCase();if(!q)return alert("Andika unachotafuta");let users=LS("tzjamii_users",[]);let uRes=users.filter(function(u){return u.name.toLowerCase().includes(q)});let pRes=posts.filter(function(p){return p.text.toLowerCase().includes(q)||p.author.toLowerCase().includes(q)||p.section.toLowerCase().includes(q)||(p.sub||"").toLowerCase().includes(q)});let mRes=MIKOA.filter(function(m){return m.toLowerCase().includes(q)});let cRes=CLUBS.filter(function(m){return m.toLowerCase().includes(q)});let vRes=VIPAJI.filter(function(m){return m.toLowerCase().includes(q)});let chRes=VYAMA.filter(function(m){return m.n.toLowerCase().includes(q)});
-let html="";if(uRes.length)html+="<b>👥 Watu:</b>"+uRes.map(function(u){return "<div class='card' data-p='"+u.name+"' style='cursor:pointer'>👤 <b>"+u.name+"</b> - "+(u.phone||"")+"<div class='small'>Bonyeza kuona Profile</div></div>"}).join("");
-if(pRes.length)html+="<b>📝 Post:</b>"+pRes.slice(0,20).map(function(p){return "<div class='card'><b>"+p.author+"</b> • "+p.section+(p.sub?" • "+p.sub:"")+"<p>"+p.text.slice(0,120)+"</p><div class='small'>❤️ "+p.likes+" • 💬 "+p.comments.length+"</div></div>"}).join("");
-if(mRes.length)html+="<b>🗺️ Mikoa:</b>"+mRes.map(function(m){return "<div class='card' data-mkoa='"+m+"' style='cursor:pointer'>📍 "+m+" - Bonyeza kuingia</div>"}).join("");
-if(cRes.length)html+="<b>⚽ Klabu:</b>"+cRes.map(function(m){return "<div class='card' data-club='"+m+"' style='cursor:pointer'>⚽ "+m+" - Bonyeza kuingia</div>"}).join("");
-if(vRes.length)html+="<b>⭐ Vipaji:</b>"+vRes.map(function(m){return "<div class='card' data-vipaji='"+m+"' style='cursor:pointer'>⭐ "+m+"</div>"}).join("");
-if(chRes.length)html+="<b>🏛 Vyama:</b>"+chRes.map(function(m){return "<div class='card' data-chama='"+m.n+"' style='cursor:pointer'>🏛 "+m.n+"</div>"}).join("");
-if(!html)html="<div class='card'>Hakuna matokeo kwa '"+q+"'. Jaribu jina lingine / neno lingine.</div>";
-document.getElementById("searchResults").innerHTML=html;document.getElementById("searchModal").classList.add("open");
-document.querySelectorAll("[data-p]").forEach(function(el){el.onclick=function(){closeAll();let uu=users.find(function(x){return x.name===el.dataset.p});openProfile(el.dataset.p,uu?uu.phone:"")}});
-document.querySelectorAll("[data-mkoa]").forEach(function(el){el.onclick=function(){cur="Mikoa";sub=el.dataset.mkoa;closeAll();render()}});
-document.querySelectorAll("[data-club]").forEach(function(el){el.onclick=function(){cur="Michezo";sub=el.dataset.club;closeAll();render()}});
-document.querySelectorAll("[data-vipaji]").forEach(function(el){el.onclick=function(){cur="Vipaji";sub=el.dataset.vipaji;closeAll();render()}});
-document.querySelectorAll("[data-chama]").forEach(function(el){el.onclick=function(){cur="Vyama";sub=el.dataset.chama;closeAll();render()}});
-}
-document.getElementById("searchBtn").onclick=function(){doSearch(document.getElementById("searchInp").value)};
-document.getElementById("searchInp").addEventListener("keypress",function(e){if(e.key==="Enter")doSearch(e.target.value)});
-document.getElementById("doAuthBtn").onclick=async function(){
-  let n=document.getElementById("aName").value.trim(), p=document.getElementById("aPhone").value.trim(), em=document.getElementById("aEmail").value.trim(), pw=document.getElementById("aPass").value;
-  let msgEl=document.getElementById("authMsg");
-  if(!n||!pw){msgEl.textContent="Weka jina na password"; return alert("Weka jina na password");}
-  if(isBanned(p,n))return alert("🚫 Akaunti hii IMEFUNGWA na Admin kwa kuvunja sheria. Wasiliana na Admin.");
-  let isAdmin=(n.toLowerCase()==="admin"&&pw===getAdminPass());
-  if(n.toLowerCase()==="admin"&&!isAdmin){let att=parseInt(localStorage.getItem("tzjamii_admin_att")||"0")+1;localStorage.setItem("tzjamii_admin_att",att);if(att>=5)return alert("Umejaribu mara 5 vibaya. Subiri dakika 10.");return alert("Password ya Admin si sahihi. Jaribio "+att+"/5")}
-  localStorage.setItem("tzjamii_admin_att","0");
-  if(firebaseReady && em && em.includes("@")){
-    msgEl.textContent="Inaunganisha na Firebase... Subiri...";
+document.getElementById("notifBtn").onclick=function(){let u=getUser();if(!u){document.getElementById("authModal").classList.add("open");return}let list=getNotifs().filter(function(n){return n.to===u.name||(u.phone&&n.toPhone===u.phone)});document.getElementById("notifList").innerHTML=list.length?list.map(function(n){return "<div class='card "+(n.read?"":"notifUnread")+"'><b>"+n.from+"</b>: "+n.text+"<div class='small'>"+n.time+"</div></div>"}).join(""):"<div class='card'>Hakuna notification bado.</div>";document.getElementById("notifModal").classList.add("open");let ns=getNotifs();ns.forEach(function(n){if(n.to===u.name||(u.phone&&n.toPhone===u.phone))n.read=true});SV("tzjamii_notifs",ns);updateNotifBadge()};
+async function openProfile(name,phone){
+  let uname=cleanName(name);
+  let myPosts=posts.filter(function(p){return cleanName(p.author)===uname});
+  let likes=myPosts.reduce(function(s,p){return s+p.likes},0);
+  let mem=getMembers().filter(function(m){return m.name===uname||(phone&&m.phone===phone)});
+  let users=LS("tzjamii_users",[]);let uobj=users.find(function(x){return x.name===uname});let uphone=phone||(uobj?uobj.phone:"");
+  // V11 - Tumia allFollows kutoka Firestore
+  let followsNow = getFollows();
+  let followers=followsNow.filter(function(f){return cleanName(f.target)===uname}).length;
+  let following=followsNow.filter(function(f){return cleanName(f.by)===uname}).length;
+  let me=getUser();let isMe=me&&cleanName(me.name)===uname;let fol=isFollowing(uname);
+  let picUrl=await getProfPicUrl(uname,uphone);let picHtml=picUrl?('<img class="profPic" src="'+picUrl+'">'):("<div class='avatar' style='width:90px;height:90px;font-size:32px;margin:auto'>"+uname.slice(0,2).toUpperCase()+"</div>");
+  document.getElementById("profileContent").innerHTML="<div style='text-align:center'>"+picHtml+"<h3>"+uname+(isPremium(uphone)?" ⭐ PREMIUM":"")+"</h3><p class='small'>"+(uphone?("Simu: "+uphone+" • "):"")+(mem.length?("Vyama: "+mem.map(function(m){return m.chama}).join(", ")):"Hana chama bado")+"</p><p><b>"+myPosts.length+"</b> Post • <b>"+likes+"</b> Likes • <b>"+followers+"</b> Followers • <b>"+following+"</b> Anawafuata</p>"+(isMe?"<label class='file'>📷 Badilisha Picha ya Profile<input type='file' id='profFileInp' accept='image/*'></label><br><button class='btn2' id='delProfPic'>🗑 Ondoa Picha</button><p class='small'>Hii ni Profile Yako ✅</p><button class='btn2' id='myLogout'>Toka (Log Out)</button>":("<button class='btn' id='followBtn'>"+(fol?"✅ Unamfollow - Bonyeza Kuunfollow":"➕ Mfollow")+"</button>"))+"</div><hr><b>Post zake:</b><div id='profPosts'></div>";
+  document.getElementById("profileModal").classList.add("open");
+  let pp=document.getElementById("profPosts");pp.innerHTML=myPosts.length?myPosts.map(function(p){return "<div class='card'><b>"+p.section+(p.sub?" • "+p.sub:"")+"</b><p>"+p.text.slice(0,120)+"</p><div class='small'>❤️ "+p.likes+" • 💬 "+p.comments.length+" • "+p.time+"</div></div>"}).join(""):"<p class='small'>Hana post bado.</p>";
+  // V11 - FOLLOW BUTTON ILIYOREKEBISHWA KABISA
+  let fb=document.getElementById("followBtn");
+  if(fb) fb.onclick = async function(){
+    let me2=getUser();
+    if(!me2){ document.getElementById("authModal").classList.add("open"); return; }
+    if(cleanName(me2.name)===uname){ alert("Huwezi kujifollow mwenyewe"); return; }
+    fb.textContent="Subiri..."; fb.disabled=true;
     try{
-      try{ await auth.createUserWithEmailAndPassword(em, pw); }
-      catch(e){ if(e.code==="auth/email-already-in-use"){ await auth.signInWithEmailAndPassword(em, pw); } else if(e.code!=="auth/email-already-in-use"){ throw e; } }
-      msgEl.textContent="✅ Umeingia na Firebase!";
-    }catch(e){
-      msgEl.textContent="Kosa la Firebase: "+e.message;
-      console.log("Firebase Auth error:", e);
-      if(e.message.includes("operation-not-allowed")){ alert("Nenda Firebase > Authentication > Sign-in method > Washa Email/Password"); return; }
-    }
-  } else if(firebaseReady && !em){
-    msgEl.textContent="Weka Email ili akaunti ihifadhiwe kwenye Firebase.";
-  }
-  let users=LS("tzjamii_users",[]);if(!users.find(function(u){return u.name===n})){users.push({name:n,phone:p,email:em||""});SV("tzjamii_users",users)}
-  localStorage.setItem("tzjamii_user",JSON.stringify({name:n,phone:p,email:em||"",isAdmin:isAdmin}));closeAll();updateUserLine();alert(isAdmin?"Karibu Admin!":"Karibu "+n+" ✅ Umeingia!");render();
-};
-document.getElementById("fileInp").addEventListener("change",async function(e){let f=e.target.files[0];if(!f)return;document.getElementById("fileInfo").textContent=f.name+" • "+(f.size/1048576).toFixed(1)+" MB";
-if(f.type.indexOf("image/")===0){pendingType="image";let bmp=await createImageBitmap(f);let max=1280,sc=Math.min(1,max/Math.max(bmp.width,bmp.height));let c=document.createElement("canvas");c.width=bmp.width*sc;c.height=bmp.height*sc;c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);pendingBlob=await new Promise(function(r){c.toBlob(r,"image/jpeg",0.78)});let url=URL.createObjectURL(pendingBlob);document.getElementById("prev").innerHTML='<img class="media" src="'+url+'">';}
-else if(f.type.indexOf("video/")===0){pendingType="video";pendingBlob=f;let url=URL.createObjectURL(f);document.getElementById("prev").innerHTML='<video class="media" src="'+url+'" controls></video>';}});
-document.getElementById("clearBtn").onclick=function(){document.getElementById("txt").value="";document.getElementById("prev").innerHTML="";document.getElementById("fileInfo").textContent="";pendingBlob=null;pendingType=""};
-document.getElementById("reportBtn").onclick=function(){let t=prompt("Unaripoti nini? Andika sababu (matusi / uchi / wizi / uongo):");if(!t)return;let reps=LS("tzjamii_reports",[]);reps.push({text:t,time:new Date().toLocaleString()});SV("tzjamii_reports",reps);alert("Asante! Ripoti imetumwa kwa Admin.")};
-document.getElementById("pubBtn").onclick=async function(){let u=getUser();if(!u){alert("Ingia kwanza");document.getElementById("authModal").classList.add("open");return}if(isBanned(u.phone,u.name))return alert("🚫 Umefungiwa. Huwezi kuchapisha.");let text=document.getElementById("txt").value.trim();if(!text&&!pendingBlob)return alert("Andika au chagua media");let bad=["matusi","uchi","ngono","tomba","kuma","mboo","fuck","shit"];let low=text.toLowerCase();if(bad.some(function(w){return low.includes(w)}))return alert("⚠️ Maneno haya hayaruhusiwi kwa Sera za TZ JAMII. Badilisha maneno.");let mediaId=null;if(pendingBlob){mediaId="m"+Date.now()+Math.floor(Math.random()*999);try{await dbPut(mediaId,pendingBlob)}catch(e){return alert("Media kubwa sana")}}let init=u.name.split(" ").map(function(x){return x[0]}).join("").slice(0,2).toUpperCase();let colors=["#1e88e5","#e53935","#43a047","#f9a825","#8e24aa","#00838f"];posts.unshift({id:Date.now(),section:cur,sub:sub||"",author:u.name+(u.isAdmin?" (Admin)":""),init:u.isAdmin?"AD":init,color:colors[u.name.length%colors.length],text:text,likes:0,comments:[],time:"Sasa hivi",mediaId:mediaId,mediaType:pendingType,phone:u.phone});savePosts();document.getElementById("clearBtn").click();render();alert("Imechapishwa "+(sub?("kwenye "+sub):("kwenye "+cur)))};
-document.getElementById("viewer").onclick=function(){this.classList.remove("open")};
-let curChama="";
-document.getElementById("doChamaBtn").onclick=function(){let n=document.getElementById("cName").value.trim(),ph=document.getElementById("cPhone").value.trim(),card=document.getElementById("cCard").value.trim(),mk=document.getElementById("cMkoa").value,pw=document.getElementById("cPass").value;if(!n||!ph||!card||!pw)return alert("Jaza zote");if(card.length<5)return alert("Kadi si sahihi");if(isBanned(ph,n))return alert("Umefungiwa");let mem=getMembers();if(mem.find(function(m){return m.chama===curChama&&m.card===card}))return alert("Kadi tayari imejiunga");mem.push({chama:curChama,name:n,phone:ph,card:card,mkoa:mk});SV("tzjamii_members",mem);localStorage.setItem("tzjamii_user",JSON.stringify({name:n,phone:ph,isAdmin:false}));closeAll();updateUserLine();alert("Hongera! Umejiunga na "+curChama);render()};
-function openChama(v){curChama=v.n;document.getElementById("chamaTitle").textContent="Jiunge na "+v.n+" 🪪";document.getElementById("cMkoa").innerHTML=MIKOA.map(function(m){return "<option>"+m+"</option>"}).join("");document.getElementById("chamaModal").classList.add("open")}
-let adPendingBlob=null,adPendingType="";document.getElementById("adFileInp").addEventListener("change",async function(e){let f=e.target.files[0];if(!f)return;document.getElementById("adFileInfo").textContent=f.name+" • "+(f.size/1048576).toFixed(1)+" MB";if(f.type.indexOf("image/")===0){adPendingType="image";let bmp=await createImageBitmap(f);let max=1280,sc=Math.min(1,max/Math.max(bmp.width,bmp.height));let c=document.createElement("canvas");c.width=bmp.width*sc;c.height=bmp.height*sc;c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);adPendingBlob=await new Promise(function(r){c.toBlob(r,"image/jpeg",0.78)});document.getElementById("adPrev").innerHTML='<img class="media" src="'+URL.createObjectURL(adPendingBlob)+'">';}else if(f.type.indexOf("video/")===0){adPendingType="video";adPendingBlob=f;document.getElementById("adPrev").innerHTML='<video class="media" src="'+URL.createObjectURL(f)+'" controls></video>';}});
-document.getElementById("doAdBtn").onclick=async function(){let pkg=document.getElementById("adPkg").value,title=document.getElementById("adTitle").value.trim(),txt=document.getElementById("adText").value.trim(),ph=document.getElementById("adPhone").value.trim();if(!title||!txt||!ph)return alert("Jaza Biashara, Tangazo na Simu");let mediaId=null;if(adPendingBlob){mediaId="ad"+Date.now()+Math.floor(Math.random()*999);try{await dbPut(mediaId,adPendingBlob)}catch(e){return alert("Picha/Video kubwa sana")}}let ads=LS("tzjamii_ads",[]);ads.push({title:title,text:txt,phone:ph,price:pkg,status:"Inasubiri Malipo",time:new Date().toLocaleString(),mediaId:mediaId,mediaType:adPendingType});SV("tzjamii_ads",ads);let msg="TZ JAMII - OMBI LA TANGAZO%0A%0ABiashara: "+encodeURIComponent(title)+"%0ATangazo: "+encodeURIComponent(txt)+"%0AKifurushi: TSh "+pkg+"%0ASimu: "+encodeURIComponent(ph)+"%0A%0ANimelipa kwenda Mix by Yas 0656287155 / Halotel 0628287155. Tafadhali thibitisha.";closeAll();if(document.getElementById("adWhats").checked){window.open("https://wa.me/255656287155?text="+msg,"_blank")}alert("✅ Ombi limepokelewa! Lipa TSh "+pkg+" kwenda Mix by Yas 0656287155 au Halotel 0628287155.");adPendingBlob=null;adPendingType="";document.getElementById("adPrev").innerHTML="";document.getElementById("adFileInfo").textContent="";};
-document.getElementById("doPremBtn").onclick=function(){let ph=document.getElementById("premPhone").value.trim();if(!ph)return alert("Weka namba ya simu");let reqs=LS("tzjamii_prem_reqs",[]);reqs.push({phone:ph,time:new Date().toLocaleString()});SV("tzjamii_prem_reqs",reqs);let msg="TZ JAMII - OMBI LA PREMIUM%0A%0ASimu: "+encodeURIComponent(ph)+"%0A%0ANimelipa TSh 10,000 kwenda Mix by Yas 0656287155 / Halotel 0628287155. Tafadhali nipe Premium";closeAll();window.open("https://wa.me/255656287155?text="+msg,"_blank");alert("Ombi la Premium limetumwa kwa Admin WhatsApp! Lipa TSh 10,000 kwenda 0656287155 / 0628287155.")};
-function renderAdmin(){let el=document.getElementById("adminContent");let users=LS("tzjamii_users",[]);let banned=getBanned();let mem=getMembers();let ads=LS("tzjamii_ads",[]);let reps=LS("tzjamii_reports",[]);let premReqs=LS("tzjamii_prem_reqs",[]);
-if(adminTab==="users"){el.innerHTML="<p><b>Watumiaji:</b> "+users.length+" | Firebase: "+(firebaseReady?"✅ Imeunganishwa":"⚠️ Tatizo")+"</p>"+(users.map(function(u,i){return "<div class='card' style='padding:8px'><b>"+u.name+"</b> - "+(u.phone||"")+" "+(isPremium(u.phone)?"⭐ PREMIUM":"")+"<br><button class='btnRed' data-ban='"+i+"'>🚫 Mfungie Akaunti</button> <button class='btnRed' data-deluser='"+i+"'>🗑 Futa Akaunti</button> <button class='btn2' data-prem='"+i+"'>⭐ Mpe Premium</button> <button class='btn2' data-viewprof='"+i+"'>👤 Profile</button></div>"}).join("")||"Hakuna");}
-else if(adminTab==="posts"){el.innerHTML="<p><b>Post zote:</b> "+posts.length+"</p>"+posts.map(function(p,i){return "<div class='card' style='padding:8px'><b>"+p.author+"</b>: "+p.text.slice(0,80)+"<br><button class='btnRed' data-delpost='"+p.id+"'>🗑 Futa Post</button> <button class='btn2' data-banpost='"+i+"'>🚫 Mfungie Mchapishaji</button></div>"}).join("")}
-else if(adminTab==="banned"){el.innerHTML="<p><b>Waliofungiwa:</b> "+banned.length+"</p>"+(banned.map(function(b,i){return "<div class='card' style='padding:8px'><b>"+b.name+"</b> - "+b.phone+" - Sababu: "+(b.reason||"Kuvunja sheria")+"<br><button class='btn2' data-unban='"+i+"'>✅ Mfungulie</button></div>"}).join("")||"Hakuna aliyefungiwa");}
-else if(adminTab==="members"){el.innerHTML="<p><b>Wanachama wa Vyama:</b> "+mem.length+"</p>"+mem.map(function(m,i){return "<div class='card' style='padding:8px'>"+m.chama+" - "+m.name+" - Kadi: "+m.card+" - "+m.mkoa+"<br><button class='btnRed' data-delmember='"+i+"'>🗑 Futa Mwanachama</button></div>"}).join("")}
-else if(adminTab==="ads"){el.innerHTML="<p><b>Matangazo / Malipo:</b></p><p class='small'>Kama mteja ametuma kwa simu nyingine, ombi linakuja kwako kwa WhatsApp 0656287155. Hapa unaona maombi yaliyotumwa kwa simu hii.</p><p><b>Maombi ya Tangazo:</b> "+ads.length+"</p>"+ads.map(function(a,i){return "<div class='card' style='padding:8px'><b>"+a.title+"</b> - TSh "+a.price+" - "+a.status+"<br>"+a.text+"<br>Simu: "+a.phone+(a.mediaId?"<br><span class='small'>📷/🎥 Picha/Video imeambatishwa - itaonekana baada ya kuthibitisha</span>":"<br><span class='small'>Hakuna picha</span>")+"<br><button class='btn2' data-approve='"+i+"'>✅ Thibitisha & Onyesha</button> <button class='btnRed' data-delad='"+i+"'>🗑 Futa</button></div>"}).join("")+"<p><b>Maombi ya Premium:</b> "+premReqs.length+"</p>"+premReqs.map(function(r,i){return "<div>"+r.phone+" - "+r.time+" <button class='btn2' data-approveprem='"+i+"'>⭐ Thibitisha Premium</button></div>"}).join("")+"<p><b>Ripoti kutoka kwa watumiaji:</b> "+reps.length+"</p>"+reps.map(function(r){return "<div class='small'>• "+r.text+" - "+r.time+"</div>"}).join("")}
-else if(adminTab==="sec"){el.innerHTML="<p><b>🔐 Usalama wa App</b></p><p>Firebase Status: "+(firebaseReady?"✅ Imeunganishwa - tzjamii":"⚠️ Tatizo")+"</p><p>1. Badilisha Password ya Admin sasa (usitumie admin123):</p><input id='newAdminPass' type='password' placeholder='Password mpya ya Admin (min 8 herufi)'><button class='btn' id='changePassBtn'>BADILISHA PASSWORD</button><p class='small'>2. Usitume password kwa mtu yeyote. Admin ni wewe peke yako.<br>3. Kila ukimaliza, toka (Log Out) - usiache simu wazi.<br>4. Fanya Backup: Copy faili ya HTML kila wiki.<br>5. Usifungue link za ajabu zinazodai ni Admin.<br>6. Ukihamia kwenye server halisi (Hosting), tumia HTTPS + password ngumu + 2FA.</p><p><b>Namba ya Malipo:</b> Mix by Yas 0656287155 / Halotel 0628287155 - Fanuel Kisoma</p><input id='payNum' placeholder='Mix by Yas: 0656287155 / Halotel: 0628287155' value='"+(localStorage.getItem("tzjamii_pay")||"0656287155 / 0628287155")+"'><button class='btn2' id='savePayBtn'>Hifadhi Namba</button><br><br><button class='btnRed' id='logoutBtn'>Toka kama Admin (Log Out)</button> <button class='btn2' id='backupBtn'>📥 Pakua Backup ya Data</button>"}
-el.querySelectorAll("[data-ban]").forEach(function(b){b.onclick=function(){let u=users[parseInt(b.dataset.ban)];let reason=prompt("Sababu ya kumfungia "+u.name+"?","Kuvunja sheria");let bl=getBanned();bl.push({name:u.name,phone:u.phone,reason:reason});SV("tzjamii_banned",bl);alert(u.name+" amefungiwa!");renderAdmin()}});
-el.querySelectorAll("[data-deluser]").forEach(function(b){b.onclick=function(){if(!confirm("Futa akaunti ya "+users[parseInt(b.dataset.deluser)].name+"?"))return;users.splice(parseInt(b.dataset.deluser),1);SV("tzjamii_users",users);renderAdmin()}});
-el.querySelectorAll("[data-prem]").forEach(function(b){b.onclick=function(){let u=users[parseInt(b.dataset.prem)];let pr=getPremium();if(!pr.includes(u.phone))pr.push(u.phone);SV("tzjamii_premium",pr);addNotif(u.name,u.phone,"Admin","Umepewa Premium ⭐ Hongera!");alert(u.name+" amepewa Premium ⭐");renderAdmin()}});
-el.querySelectorAll("[data-viewprof]").forEach(function(b){b.onclick=function(){let u=users[parseInt(b.dataset.viewprof)];closeAll();openProfile(u.name,u.phone)}});
-el.querySelectorAll("[data-delpost]").forEach(function(b){b.onclick=function(){posts=posts.filter(function(p){return String(p.id)!==b.dataset.delpost});savePosts();renderAdmin();render()}});
-el.querySelectorAll("[data-banpost]").forEach(function(b){b.onclick=function(){let p=posts[parseInt(b.dataset.banpost)];let bl=getBanned();bl.push({name:p.author,phone:p.phone||"",reason:"Post iliyovunja sheria"});SV("tzjamii_banned",bl);posts=posts.filter(function(x){return x.id!==p.id});savePosts();alert("Mchapishaji amefungiwa na post imefutwa");renderAdmin();render()}});
-el.querySelectorAll("[data-unban]").forEach(function(b){b.onclick=function(){let bl=getBanned();bl.splice(parseInt(b.dataset.unban),1);SV("tzjamii_banned",bl);renderAdmin()}});
-el.querySelectorAll("[data-delmember]").forEach(function(b){b.onclick=function(){let mm=getMembers();mm.splice(parseInt(b.dataset.delmember),1);SV("tzjamii_members",mm);renderAdmin()}});
-el.querySelectorAll("[data-approve]").forEach(function(b){b.onclick=function(){let aa=LS("tzjamii_ads",[]);let _a=aa[parseInt(b.dataset.approve)];_a.status="✅ Imethibitishwa - Inaonekana";SV("tzjamii_ads",aa);addNotif(_a.title,_a.phone,"Admin","Tangazo lako '"+_a.title+"' limethibitishwa ✅ Sasa linaonekana!");posts.unshift({id:Date.now(),section:"Matangazo",sub:"",author:"📢 "+_a.title+" (Tangazo Lililolipwa)",init:"AD",color:"#ff8f00",text:_a.text+" | Wasiliana: "+_a.phone,likes:0,comments:[],time:"Sasa hivi",mediaId:_a.mediaId||null,mediaType:_a.mediaType||""});savePosts();alert("Tangazo limeanza kuonekana kwenye Matangazo!");renderAdmin();render()}});
-el.querySelectorAll("[data-delad]").forEach(function(b){b.onclick=function(){let aa=LS("tzjamii_ads",[]);aa.splice(parseInt(b.dataset.delad),1);SV("tzjamii_ads",aa);renderAdmin()}});
-el.querySelectorAll("[data-approveprem]").forEach(function(b){b.onclick=function(){let rr=LS("tzjamii_prem_reqs",[]);let ph=rr[parseInt(b.dataset.approveprem)].phone;let pr=getPremium();if(!pr.includes(ph))pr.push(ph);SV("tzjamii_premium",pr);let uu=LS("tzjamii_users",[]).find(function(x){return x.phone===ph});addNotif(uu?uu.name:ph,ph,"Admin","Umepewa Premium ⭐ Hongera!");rr.splice(parseInt(b.dataset.approveprem),1);SV("tzjamii_prem_reqs",rr);alert(ph+" amepewa Premium");renderAdmin()}});
-let cp=document.getElementById("changePassBtn");if(cp)cp.onclick=function(){let np=document.getElementById("newAdminPass").value;if(np.length<8)return alert("Password lazima iwe herufi 8+");localStorage.setItem("tzjamii_admin_pass",np);alert("✅ Password ya Admin imebadilishwa! Kumbuka: "+np)};
-let sp=document.getElementById("savePayBtn");if(sp)sp.onclick=function(){localStorage.setItem("tzjamii_pay",document.getElementById("payNum").value);alert("Namba ya malipo imehifadhiwa")};
-let lo=document.getElementById("logoutBtn");if(lo)lo.onclick=function(){localStorage.removeItem("tzjamii_user");closeAll();updateUserLine();render();alert("Umetoka kama Admin")};
-let bk=document.getElementById("backupBtn");if(bk)bk.onclick=function(){let data=JSON.stringify({posts:posts,users:LS("tzjamii_users",[]),banned:getBanned(),members:getMembers(),ads:LS("tzjamii_ads",[])});let blob=new Blob([data],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="tzjamii_backup.json";a.click();alert("Backup imepakuliwa")};
-}
-document.getElementById("adminBtn").onclick=function(){let u=getUser();if(!u||!u.isAdmin)return alert("Wewe si Admin");document.getElementById("adminModal").classList.add("open");renderAdmin()};
-document.querySelectorAll(".tabBtn").forEach(function(t){t.onclick=function(){document.querySelectorAll(".tabBtn").forEach(function(x){x.classList.remove("on")});t.classList.add("on");adminTab=t.dataset.tab;renderAdmin()}});
-async function render(){renderNav();updateUserLine();let subArea=document.getElementById("subArea");subArea.innerHTML="";let compose=document.getElementById("composeArea");
-let adsApproved=LS("tzjamii_ads",[]).filter(function(a){return a.status.includes("Imethibitishwa")});
-if(cur==="Mikoa"&&!sub){compose.style.display="none";subArea.innerHTML="<div class='card'><b>🗺️ Chagua Mkoa</b></div><div class='grid'>"+MIKOA.map(function(m){return "<div class='gitem' data-m='"+m+"'><b>📍 "+m+"</b></div>"}).join("")+"</div>";subArea.querySelectorAll(".gitem").forEach(function(el){el.onclick=function(){sub=el.dataset.m;render()}});document.getElementById("feed").innerHTML="";return}
-if(cur==="Michezo"&&!sub){compose.style.display="none";subArea.innerHTML="<div class='card'><b>⚽ Aina za Michezo</b></div><div class='grid'>"+MICHEZO.map(function(m){return "<div class='gitem' data-m='"+m+"'><b>"+m+"</b></div>"}).join("")+"</div><div class='card' style='margin-top:12px'><b>🏆 Klabu Zote</b></div><div class='grid'>"+CLUBS.map(function(m){return "<div class='gitem' data-m='"+m+"' style='background:#fff7e6'><b>⚽ "+m+"</b></div>"}).join("")+"</div>";subArea.querySelectorAll(".gitem").forEach(function(el){el.onclick=function(){sub=el.dataset.m;render()}});document.getElementById("feed").innerHTML="";return}
-if(cur==="Vipaji"&&!sub){compose.style.display="none";subArea.innerHTML="<div class='card'><b>⭐ Kila Aina ya Kipaji</b></div><div class='grid'>"+VIPAJI.map(function(m){return "<div class='gitem' data-m='"+m+"'><b>⭐ "+m+"</b></div>"}).join("")+"</div>";subArea.querySelectorAll(".gitem").forEach(function(el){el.onclick=function(){sub=el.dataset.m;render()}});document.getElementById("feed").innerHTML="";return}
-if(cur==="Vyama"&&!sub){compose.style.display="none";subArea.innerHTML="<div class='card'><b>🏛 Vyama 4 Vikubwa</b><p class='small'>Kujiunga lazima Kadi ya Chama.</p></div>"+VYAMA.map(function(v){return "<div class='card' style='border-left:6px solid "+v.c+"'><b>"+v.n+"</b><p>"+v.d+"</p><button class='btn' data-v='"+v.n+"'>👉 Ingia kwenye "+v.n+"</button> <button class='btn2' data-j='"+v.n+"'>🪪 JIUNGE</button></div>"}).join("");subArea.querySelectorAll("[data-v]").forEach(function(el){el.onclick=function(){sub=el.dataset.v;render()}});subArea.querySelectorAll("[data-j]").forEach(function(el){el.onclick=function(){let v=VYAMA.find(function(x){return x.n===el.dataset.j});openChama(v)}});document.getElementById("feed").innerHTML="";return}
-compose.style.display="block";if(sub){subArea.innerHTML="<button class='back' id='backBtn'>⬅ Rudi kwenye "+cur+"</button><div class='card'><b>Unaangalia: "+sub+"</b></div>";document.getElementById("backBtn").onclick=function(){sub="";render()}}
-document.getElementById("composeTitle").textContent="Chapisha "+(sub?("kwenye "+sub):("kwenye "+cur));
-let list=posts.filter(function(p){if(p.section!==cur)return false;if(sub&&p.sub!==sub)return false;return true});
-let feed=document.getElementById("feed");feed.innerHTML="";if(cur==="Matangazo"&&adsApproved.length){feed.innerHTML+=adsApproved.map(function(a){return "<div class='card' style='border:2px solid #ff8f00'><b>📢 TANGAZO LILILOLIPIWA - "+a.title+"</b><p>"+a.text+"</p><div class='small'>Wasiliana: "+a.phone+" | TSh "+a.price+"</div></div>"}).join("")}
-if(!list.length&&!adsApproved.length){feed.innerHTML="<div class='card'>Hakuna post bado "+(sub?("kwenye "+sub):("kwenye "+cur))+". Kuwa wa kwanza!</div>";return}
-for(let p of list){let div=document.createElement("div");div.className="card";let mh="";if(p.mediaId){let b=await dbGet(p.mediaId);if(b){let url=URL.createObjectURL(b);mh=p.mediaType==="image"?'<img class="media" src="'+url+'">':'<video class="media" src="'+url+'" controls preload="metadata" playsinline></video>'}}
-let u=getUser();let canDel=u&&(u.isAdmin||u.name===p.author.replace(" (Admin)",""));
-div.innerHTML='<div style="display:flex;gap:10px"><div class="avatar" data-prof="'+p.author+'">'+p.init+'</div><div><b class="authorName" data-prof="'+p.author+'">'+p.author+'</b> '+(isPremium(p.phone)?'<span class="prem">⭐</span>':"")+'<div class="small">'+p.section+(p.sub?" • "+p.sub:"")+' • '+p.time+'</div></div>'+(canDel?'<span class="del" style="margin-left:auto;cursor:pointer">🗑</span>':"")+'</div><p>'+p.text.replace(/</g,"&lt;")+'</p>'+mh+'<div class="actions"><span class="like">❤️ '+p.likes+'</span><span class="cmt">💬 '+p.comments.length+'</span><span class="shr">↗️ Shiriki</span><span class="rep">🚩 Ripoti</span></div><div>'+p.comments.map(function(c){return '<div class="small"><b class="authorName" data-prof="'+c.a+'">'+c.a+':</b> '+c.t+'</div>'}).join("")+'</div>';
-if(canDel)div.querySelector(".del").onclick=function(){if(confirm("Futa?")){posts=posts.filter(function(x){return x.id!==p.id});savePosts();render()}};
-div.querySelector(".like").onclick=function(){let liker=getUser();if(!liker){document.getElementById("authModal").classList.add("open");return}p.likes++;if(cleanName(p.author)!==liker.name)addNotif(cleanName(p.author),p.phone||"",liker.name,"amekuklike post yako ❤️ - "+p.text.slice(0,40));savePosts();render()};
-div.querySelector(".cmt").onclick=function(){let uu=getUser();if(!uu){document.getElementById("authModal").classList.add("open");return}let t=prompt("Comment:");if(!t)return;p.comments.push({a:uu.name,t:t});if(cleanName(p.author)!==uu.name)addNotif(cleanName(p.author),p.phone||"",uu.name,"amekujibu 💬 - "+t.slice(0,50));savePosts();render()};
-div.querySelector(".shr").onclick=function(){let txt=p.author+": "+p.text;if(navigator.share){navigator.share({title:"TZ JAMII",text:txt}).catch(function(){})}else{navigator.clipboard.writeText(txt);alert("Imenakiliwa!")}};
-div.querySelector(".rep").onclick=function(){let reps=LS("tzjamii_reports",[]);reps.push({text:"Ripoti post ya "+p.author+": "+p.text.slice(0,60),time:new Date().toLocaleString()});SV("tzjamii_reports",reps);alert("Ripoti imetumwa kwa Admin")};
-div.querySelectorAll("[data-prof]").forEach(function(el){el.onclick=function(){let nm=cleanName(el.dataset.prof);let uu=LS("tzjamii_users",[]).find(function(x){return x.name===nm});openProfile(nm,uu?uu.phone:(p.phone||""))}});
-let mi=div.querySelector("img.media");if(mi)mi.onclick=function(){document.getElementById("viewerContent").innerHTML='<img src="'+mi.src+'">';document.getElementById("viewer").classList.add("open")};
-let av=div.querySelector(".avatar");if(av){let pic=await getProfPicUrl(cleanName(p.author),p.phone||"");if(pic)av.innerHTML='<img src="'+pic+'">';}
-feed.appendChild(div)}}
-updateUserLine();renderNav();
-</script></body></html>
+      let fid=(cleanName(me2.name)+"_TO_"+uname).replace(/[^a-zA-Z0-9_]/g,"_");
+      if(firebaseReady){
+       
