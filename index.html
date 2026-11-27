@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V2</title>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V3</title>
 <style>
 body{font-family:sans-serif;background:#eef2f0;margin:0;padding-bottom:70px}
 header{background:#0a7a4a;color:#fff;text-align:center;padding:14px;font-size:22px;font-weight:bold;position:sticky;top:0;z-index:10}
@@ -10,77 +10,110 @@ button{padding:11px;background:#0a7a4a;color:#fff;border:none;border-radius:10px
 .tabs{display:flex;overflow-x:auto;background:#fff;position:sticky;top:52px;z-index:9}
 .tabs button{background:none;color:#333;white-space:nowrap;border-bottom:3px solid transparent}
 .tabs button.active{color:#0a7a4a;border-bottom:3px solid #0a7a4a}
-.ppic{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#ddd;vertical-align:middle}
+.ppic{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#ddd}
 .postImg{width:100%;border-radius:10px;margin-top:8px;max-height:350px;object-fit:cover}
-.actions{display:flex;gap:8px;margin-top:8px}
+.actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .actions button{background:#f0f0f0;color:#333;flex:1}
 .delBtn{background:#ff4444!important;color:#fff!important}
-.followBtn{background:#0084ff!important}
+.followBtn{background:#0084ff!important;color:#fff!important}
+.pinBtn{background:#ffcc00!important;color:#000!important}
 </style></head><body>
-<header>🇹🇿 TZ JAMII V2</header>
+<header>🇹🇿 TZ JAMII V3</header>
 
 <div class="tabs" id="tabs">
 <button class="active" onclick="setCat('All',this)">🏠 Nyumbani</button>
 <button onclick="setCat('Michezo',this)">⚽ Michezo</button>
 <button onclick="setCat('Mikoa',this)">📍 Mikoa</button>
 <button onclick="setCat('Matangazo',this)">📢 Matangazo</button>
-<button onclick="setCat('Soko',this)">🛒 Soko Vipaji</button>
+<button onclick="setCat('Soko',this)">🛒 Soko</button>
+<button onclick="setCat('Vipaji',this)">⭐ Vipaji</button>
 <button onclick="setCat('Vyama',this)">👥 Vyama</button>
+<button onclick="setCat('Klabu',this)">🏆 Klabu</button>
 </div>
 
-<div class="card">
-<b id="userInfo">Haijaingia</b><br>
+<div class="card" id="authCard">
+<div id="userInfo" style="font-weight:bold">⏳ Inapakia...</div>
+<div id="loginForm">
 <input id="email" placeholder="Email"><input id="password" type="password" placeholder="Password">
-<button id="loginBtn" style="width:100%">INGIA / JIANDIKISHE</button>
-<p id="loginMsg"></p>
+<button id="loginBtn" style="width:100%">INGIA / JIANDIKISHE</button><p id="loginMsg"></p>
+</div>
+<button id="logoutBtn" onclick="window.doLogout()" style="display:none;width:100%;background:#ff4444">TOKA (LOGOUT)</button>
 <hr>
-<b>✏️ Badilisha Profile Yangu</b>
+<b>✏️ Profile Yangu</b>
 <input id="myName" placeholder="Jina lako - mfano Fanuel Kisoma">
-<input id="myPic" placeholder="Link ya picha yako (au weka link ya fb)">
+<input id="myPic" placeholder="Link ya picha yako">
 <button onclick="saveProfile()" style="width:100%;background:#0084ff">HIFADHI JINA + PICHA</button>
 <input id="searchInput" placeholder="🔍 Tafuta mtu / post..." oninput="doSearch(this.value)">
 </div>
 
 <div class="card">
-<select id="postCat"><option>Michezo</option><option>Mikoa</option><option>Matangazo</option><option>Soko Vipaji</option><option>Vyama</option><option>Nyumbani</option></select>
+<select id="postCat" onchange="updateSub()">
+<option>Michezo</option><option>Mikoa</option><option>Matangazo</option><option>Soko</option><option>Vipaji</option><option>Vyama</option><option>Klabu</option>
+</select>
+<select id="postSub"></select>
 <textarea id="postText" placeholder="Andika jambo..."></textarea>
-<input id="postMedia" placeholder="Link ya Picha / Video (YouTube au picha) - hiari">
+<input id="postMedia" placeholder="Link ya Picha / Video - hiari">
 <button id="postBtn" style="width:100%">POST KWA WOTE</button>
 </div>
-
+<div class="card" id="filterCard"><b id="filterTitle">🏠 Nyumbani - Post zote</b><select id="subFilter" onchange="render()"><option value="">-- Zote --</option></select></div>
 <div id="postsList"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
+  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUub9W2c",
   authDomain: "tzjamii.firebaseapp.com",
   projectId: "tzjamii",
   storageBucket: "tzjamii.firebasestorage.app",
   messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
+  appId: "1:210377984835:web:cfc328a7f8c1a1d2e3f4a5b"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app); const db = getFirestore(app);
 let currentUser=null, myProfile={}, allPosts=[], currentCat='All';
 const ADMIN_EMAIL="kisomafanuel2@gmail.com";
 
+const LISTS = {
+  "Michezo": ["Mpira wa Miguu","Mpira wa Kikapu","Volleyball","Mbio za Magari","Ngumi","Riadha","Kuogelea","Nyingine"],
+  "Mikoa": ["Dar es Salaam","Arusha","Dodoma","Mwanza","Mbeya","Morogoro","Tanga","Kilimanjaro","Zanzibar","Kagera","Kigoma","Lindi","Mara","Mtwara","Pwani","Rukwa","Ruvuma","Shinyanga","Singida","Songwe","Tabora","Iringa","Njombe","Katavi","Geita","Simiyu","Manyara"],
+  "Matangazo": ["Biashara","Ajira","Nyumba / Kiwanja","Gari","Simu","Huduma","Nyingine"],
+  "Soko": ["Nguo","Viatu","Simu","Chakula","Samani","Elektroniki","Nyingine"],
+  "Vipaji": ["Kuimba","Kuigiza","Mpira","Kuchekesha","Kupiga Picha","Kuchora","Nyingine"],
+  "Vyama": ["Vijana","Wanawake","Wafanyabiashara","Wanafunzi","Dini","Nyingine"],
+  "Klabu": ["Simba SC","Yanga SC","Azam FC","Singida Black Stars","KMC FC","Namungo FC","Coastal Union","Dodoma Jiji","Tabora United","Nyingine"]
+};
+window.updateSub=()=>{
+  const cat=document.getElementById("postCat").value;
+  const sub=document.getElementById("postSub");
+  sub.innerHTML=(LISTS[cat]||[]).map(x=>`<option>${x}</option>`).join("");
+};
+updateSub();
+
 onAuthStateChanged(auth, async (user)=>{
   currentUser=user;
+  const info=document.getElementById("userInfo");
   if(user){
     const snap=await getDoc(doc(db,"users",user.uid));
     myProfile=snap.exists()?snap.data():{};
-    document.getElementById("userInfo").innerHTML=`<img class="ppic" src="${myProfile.pic||'https://via.placeholder.com/40'}"> ${myProfile.name||user.email} ${myProfile.premium?'⭐PREMIUM':''}`;
+    const isAdmin=user.email===ADMIN_EMAIL;
+    info.innerHTML=`<img class="ppic" src="${myProfile.pic||'https://via.placeholder.com/40'}"> ${myProfile.name||user.email} ${isAdmin?'👑 ADMIN':''}`;
+    document.getElementById("loginForm").style.display="none";
+    document.getElementById("logoutBtn").style.display="block";
     document.getElementById("myName").value=myProfile.name||"";
     document.getElementById("myPic").value=myProfile.pic||"";
+  } else {
+    info.innerHTML="Haijaingia - Ingia ili upost";
+    document.getElementById("loginForm").style.display="block";
+    document.getElementById("logoutBtn").style.display="none";
   }
+  render();
 });
+window.doLogout=async()=>{ await signOut(auth); location.reload(); };
 window.saveProfile=async()=>{
-  if(!currentUser) return alert("Ingia kwanza");
+  if(!currentUser) return alert("Ingia kwanza - bado umeandikwa Haijaingia");
   await setDoc(doc(db,"users",currentUser.uid),{name:document.getElementById("myName").value, pic:document.getElementById("myPic").value, email:currentUser.email},{merge:true});
   alert("Profile imehifadhiwa!"); location.reload();
 };
@@ -90,20 +123,27 @@ document.getElementById("loginBtn").onclick=async()=>{
 };
 document.getElementById("postBtn").onclick=async()=>{
   if(!currentUser) return alert("Ingia kwanza");
-  await addDoc(collection(db,"posts"),{text:document.getElementById("postText").value, media:document.getElementById("postMedia").value, cat:document.getElementById("postCat").value, uid:currentUser.uid, name:myProfile.name||currentUser.email, pic:myProfile.pic||"", likes:[], followers:[], createdAt:serverTimestamp()});
-  document.getElementById("postText").value=""; document.getElementById("postMedia").value="";
+  await addDoc(collection(db,"posts"),{text:document.getElementById("postText").value, media:document.getElementById("postMedia").value, cat:document.getElementById("postCat").value, sub:document.getElementById("postSub").value, uid:currentUser.uid, name:myProfile.name||currentUser.email, pic:myProfile.pic||"", likes:[], pinned:0, createdAt:serverTimestamp()});
+  document.getElementById("postText").value=""; document.getElementById("postMedia").value=""; alert("Imepostwa!");
 };
-window.setCat=(c,btn)=>{currentCat=c; document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); render();};
+window.setCat=(c,btn)=>{currentCat=c; document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); 
+  const sf=document.getElementById("subFilter");
+  if(c==='All'){ sf.innerHTML=`<option value="">-- Zote --</option>`; document.getElementById("filterTitle").innerText="🏠 Nyumbani - Post zote"; }
+  else { sf.innerHTML=`<option value="">-- ${c} Zote --</option>`+(LISTS[c]||[]).map(x=>`<option>${x}</option>`).join(""); document.getElementById("filterTitle").innerText=c+" - Chagua: "; }
+  render(); };
 window.doSearch=(v)=>{ render(v.toLowerCase()); };
 
 const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
 onSnapshot(q,(snap)=>{ allPosts=[]; snap.forEach(d=>allPosts.push({id:d.id,...d.data()})); render(); });
 
 function render(search=""){
-  const list=document.getElementById("postsList"); list.innerHTML="";
-  let filtered=allPosts.filter(p=> currentCat==='All' || p.cat===currentCat || (currentCat==='Soko'&&p.cat==='Soko Vipaji') );
+  const list=document.getElementById("postsList"); if(!list) return; list.innerHTML="";
+  const subF=document.getElementById("subFilter")?.value||"";
+  let filtered=allPosts.filter(p=> currentCat==='All' || p.cat===currentCat);
+  if(subF) filtered=filtered.filter(p=>p.sub===subF);
   if(search) filtered=filtered.filter(p=>(p.text||"").toLowerCase().includes(search)||(p.name||"").toLowerCase().includes(search));
-  if(!filtered.length){list.innerHTML="<div class='card'>Hakuna post hapa bado.</div>";return;}
+  filtered.sort((a,b)=> (b.pinned||0)-(a.pinned||0));
+  if(!filtered.length){list.innerHTML="<div class='card'>Hakuna post hapa bado. Kuwa wa kwanza kupost!</div>";return;}
   filtered.forEach(p=>{
     const isMine=currentUser&&p.uid===currentUser.uid;
     const isAdmin=currentUser&&currentUser.email===ADMIN_EMAIL;
@@ -111,13 +151,15 @@ function render(search=""){
     const div=document.createElement("div"); div.className="card";
     let mediaHtml="";
     if(p.media){ if(p.media.includes("youtube")||p.media.includes("youtu.be")) mediaHtml=`<iframe width="100%" height="220" src="${p.media.replace("watch?v=","embed/")}" frameborder="0" allowfullscreen></iframe>`; else mediaHtml=`<img class="postImg" src="${p.media}">`; }
-    div.innerHTML=`<img class="ppic" src="${p.pic||'https://via.placeholder.com/40'}"> <b>${p.name||p.email||""}</b> <span class="small">• ${p.cat||""}</span><div style="margin-top:6px">${p.text||""}</div>${mediaHtml}
+    div.innerHTML=`${p.pinned?`<div style="background:#ffcc00;padding:5px;border-radius:8px;text-align:center;font-weight:bold">⭐ TANGAZO LILILOLIPIWA</div>`:''}
+    <img class="ppic" src="${p.pic||'https://via.placeholder.com/40'}"> <b>${p.name||""}</b> <span class="small">• ${p.cat||""} ${p.sub?'> '+p.sub:''}</span><div style="margin-top:6px">${p.text||""}</div>${mediaHtml}
     <div class="actions">
       <button onclick="window.likePost('${p.id}')">❤️ ${p.likes?.length||0} ${liked?'Umelike':''}</button>
       <button onclick="window.showComments('${p.id}')">💬 Comment</button>
       ${!isMine?`<button class="followBtn" onclick="window.followUser('${p.uid}')">+ Follow</button>`:''}
+      ${isAdmin?`<button class="pinBtn" onclick="window.pinPost('${p.id}',${p.pinned?0:1})">${p.pinned?'❌ Ondoa Juu':'📌 Weka Juu'}</button>`:''}
       ${(isMine||isAdmin)?`<button class="delBtn" onclick="window.delPost('${p.id}')">🗑️ Futa</button>`:''}
-    </div><div id="c-${p.id}"></div>`;
+    </div>`;
     list.appendChild(div);
   });
 }
@@ -127,10 +169,11 @@ window.likePost=async(id)=>{
   if(likes.includes(currentUser.uid)) await updateDoc(ref,{likes:arrayRemove(currentUser.uid)}); else await updateDoc(ref,{likes:arrayUnion(currentUser.uid)});
 };
 window.showComments=async(id)=>{
-  const name=prompt("Andika comment yako:"); if(!name) return;
-  await addDoc(collection(db,"posts",id,"comments"),{text:name, name:myProfile.name||currentUser.email, createdAt:serverTimestamp()});
+  const t=prompt("Andika comment yako:"); if(!t) return;
+  await addDoc(collection(db,"posts",id,"comments"),{text:t, name:myProfile.name||currentUser.email, createdAt:serverTimestamp()});
   alert("Comment imetumwa!");
 };
-window.followUser=async(uid)=>{ alert("Umemfollow! - mfumo wa Follow umewekwa, tutaongeza list ya Following kwenye Awamu 2"); };
+window.followUser=async(uid)=>{ alert("Umemfollow!"); };
 window.delPost=async(id)=>{ if(!confirm("Futa?"))return; await deleteDoc(doc(db,"posts",id)); };
+window.pinPost=async(id,val)=>{ if(!confirm(val?"Weka juu? - amelipa":"Ondoa juu?"))return; await updateDoc(doc(db,"posts",id),{pinned:val}); };
 </script></body></html>
