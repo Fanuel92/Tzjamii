@@ -127,10 +127,24 @@ window.saveProfile=async()=>{
   alert("Profile imehifadhiwa!"); location.reload();
 };
 document.getElementById("loginBtn").onclick=async()=>{
-  const e=document.getElementById("email").value, p=document.getElementById("password").value;
-  if(!e || !p) return alert("Weka Email na Password kwanza!");
-  alert("Najjaribu kuingia na: "+e);
-  try{await signInWithEmailAndPassword(auth,e,p); alert("UMEFANIKIWA KUINGIA!"); location.reload();}
+  const name=document.getElementById("myName").value.trim();
+  const phone=document.getElementById("myPhone").value.trim().replace(/\s/g,"");
+  const pic=document.getElementById("myPic").value.trim();
+  const p=document.getElementById("password").value;
+  if(!name || !phone || !p) return alert("Jaza Jina, Namba ya Simu na Password!");
+  const fakeEmail=phone+"@tzjamii.com"; // Email ya siri - user haioni
+  try{
+    await signInWithEmailAndPassword(auth,fakeEmail,p);
+    alert("UMEFANIKIWA KUINGIA!");
+  }catch{
+    try{
+      const cred=await createUserWithEmailAndPassword(auth,fakeEmail,p);
+      await setDoc(doc(db,"users",cred.user.uid),{name:name, phone:phone, pic:pic, email:fakeEmail});
+      alert("UMESAJILIWA! Karibu "+name);
+    }catch(e2){ alert("KOSA: "+e2.message); }
+  }
+  location.reload();
+};
   catch(err1){
     alert("Kuingia kumeshindikana: "+err1.message+" - Sasa najaribu kukusajili mpya...");
     try{await createUserWithEmailAndPassword(auth,e,p); alert("UMESAJILIWA MPYA!"); location.reload();}
