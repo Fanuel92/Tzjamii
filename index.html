@@ -1,190 +1,83 @@
-<!DOCTYPE html><html lang="sw"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZ JAMII V11 - FOLLOW FIXED</title>
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="shortcut icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="theme-color" content="#043d14">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="TZ JAMII">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href='data:application/manifest+json,{"name":"TZ JAMII","short_name":"TZ JAMII","display":"standalone","background_color":"%23043d14","theme_color":"%23043d14","icons":[{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!DOCTYPE html>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TZ JAMII - Mpya</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial;background:#f0f0f0}
-header{background:#043d14;color:#fff;text-align:center;padding:12px 10px;border-bottom:3px solid #FFD700}header h1{margin:0;font-size:24px}
-header button{background:#ffc107;border:0;padding:8px 14px;border-radius:20px;font-weight:800;cursor:pointer;margin:4px 2px;font-size:13px}
-nav{display:flex;gap:8px;overflow-x:auto;background:#fff;padding:10px;border-bottom:1px solid #ddd}
-nav button{border:0;background:#eee;padding:9px 14px;border-radius:20px;white-space:nowrap;cursor:pointer;font-weight:700}
-nav button.on{background:#0a7a2e;color:#fff}.wrap{max-width:620px;margin:auto;padding:10px}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px}
-textarea{width:100%;min-height:70px;border:1px solid #ddd;border-radius:10px;padding:10px;font-size:15px}
-.btn{background:#0a7a2e;color:#fff;border:0;padding:11px 18px;border-radius:10px;font-weight:800;cursor:pointer}
-.btn2{background:#eee;border:0;padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:700;margin:2px}
-.btnRed{background:#d32f2f;color:#fff;border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700;margin:2px}
-.btnGold{background:#ff8f00;color:#fff;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:800}
-label.file{background:#e8f5e9;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700;display:inline-block}
-input[type=file]{display:none}img.media,video.media{width:100%;border-radius:10px;margin-top:8px;max-height:420px;object-fit:cover;background:#000;cursor:pointer}
-.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;flex-shrink:0;cursor:pointer;overflow:hidden;background:#999}
-.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.profPic{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #0a7a2e}
-.actions{display:flex;gap:14px;margin-top:10px;font-weight:600;flex-wrap:wrap}.actions span{cursor:pointer}.small{color:#777;font-size:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:99;padding:12px}
-.modal.open{display:flex}.box{background:#fff;width:100%;max-width:460px;border-radius:14px;padding:16px;max-height:92vh;overflow:auto}
-.box input,.box select,.box textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;margin:6px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gitem{background:#fff;border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:1px solid #eee}
-#viewer{position:fixed;inset:0;background:#000;display:none;z-index:100;align-items:center;justify-content:center}#viewer.open{display:flex}#viewer img,#viewer video{max-width:100%;max-height:100%}
-.back{background:#fff;border:0;padding:8px 14px;border-radius:20px;font-weight:700;cursor:pointer;margin-bottom:8px}
-.tabBtn{border:0;background:#eee;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700;margin:2px}.tabBtn.on{background:#0a7a2e;color:#fff}
-.prem{color:#ff8f00;font-weight:800}
-.badge{background:#d32f2f;color:#fff;border-radius:50%;padding:1px 6px;font-size:11px;font-weight:900;margin-left:2px}
-.searchBar{display:flex;gap:6px;max-width:620px;margin:8px auto 0;padding:0 10px}.searchBar input{flex:1;padding:10px;border-radius:20px;border:0;outline:none}
-.authorName{cursor:pointer;color:#0a7a2e}
-.notifUnread{background:#fff8e1;border-left:4px solid #ff8f00}
-.appIcon{width:64px;height:64px;border-radius:16px;border:3px solid #FFD700;object-fit:cover;background:#043d14;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-</style></head><body>
-<header><img src="icon.png" class="appIcon" alt="TZ JAMII"><h1>TZ JAMII 🇹🇿</h1><div id="userLine">Mgeni - Jiunge kuchapisha</div>
-<button id="authBtn">INGIA / JIUNGE</button><button id="adminBtn" style="display:none;background:#111;color:#fff">🛡 ADMIN PANEL</button><br>
-<button id="seraBtn" style="background:#fff;color:#0a7a2e">📜 SERA & SHERIA</button><button id="tangazaBtn" style="background:#ff8f00;color:#fff">📢 TANGAZA BIASHARA - LIPIA</button><button id="premBtn" style="background:#6a1b9a;color:#fff">⭐ PREMIUM</button><br>
-<button id="profileBtn" style="background:#fff;color:#0a7a2e">👤 PROFILE YANGU</button><button id="notifBtn" style="background:#fff;color:#0a7a2e">🔔 NOTIFICATION <span id="notifCount" class="badge" style="display:none">0</span></button><br>
-<button id="installBtn" style="background:#FFD700;color:#000;display:none">📲 PAKUA APP KWENYE SIMU</button></header>
-<div class="searchBar"><input id="searchInp" placeholder="🔍 Tafuta mtu, post, mkoa, klabu, kipaji, chama... (mf: Simba, Juma, Dar)"><button class="btn" id="searchBtn" style="border-radius:20px">TAFUTA</button></div>
-<nav id="nav"></nav><div class="wrap"><div id="subArea"></div><div id="composeArea" class="card"><b id="composeTitle">Chapisha kwenye Jamii</b>
-<textarea id="txt" placeholder="Andika habari..."></textarea><div id="prev"></div><div id="fileInfo" class="small"></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><label class="file">📷 Picha / 🎥 Video<input type="file" id="fileInp" accept="image/*,video/*"></label>
-<button class="btn" id="pubBtn">CHAPISHA</button><button class="btn2" id="clearBtn">Futa</button><button class="btn2" id="reportBtn">🚩 Ripoti</button></div>
-<div class="small" style="margin-top:6px">Picha kubwa zinabanwa. Video kubwa hadi 500MB IndexedDB. Ukivunja sheria, Admin anakufungia.</div></div><div id="feed"></div>
-<div class="card small"><b>TZ JAMII - Sera Fupi:</b> No matusi, no uchi, no wizi, no siasa za chuki. <a href="#" id="seraLink2">Soma Sera Kamili →</a> | <a href="#" id="tangazaLink2">Tangaza Biashara →</a> | Malipo: Mix by Yas 0656287155 / Halotel 0628287155</div></div>
-<div class="modal" id="authModal"><div class="box"><h3>Ingia / Jiunge</h3><input id="aName" placeholder="Jina kamili"><input id="aPhone" placeholder="Namba ya simu"><input id="aEmail" placeholder="Email yako (kwa Firebase - mf: juma@gmail.com)"><input id="aPass" type="password" placeholder="Password (herufi 6+)"><div id="authMsg" class="small" style="color:#d32f2f"></div><button class="btn" id="doAuthBtn" style="width:100%">INGIA / JIUNGE NA FIREBASE</button><p class="small">Ukiwa umefungiwa, huwezi kuingia. Password lazima iwe herufi 6 au zaidi.</p><button class="btn2" id="closeAuth">Funga</button></div></div>
-<div class="modal" id="adminModal"><div class="box" style="max-width:520px"><h3>🛡 ADMIN PANEL - Mamlaka Kamili</h3>
-<div><button class="tabBtn on" data-tab="users">👥 Watumiaji</button><button class="tabBtn" data-tab="posts">📝 Post Zote</button><button class="tabBtn" data-tab="banned">🚫 Waliofungiwa</button><button class="tabBtn" data-tab="members">🪪 Wanachama</button><button class="tabBtn" data-tab="ads">💰 Matangazo / Malipo</button><button class="tabBtn" data-tab="sec">🔐 Usalama</button></div>
-<div id="adminContent" style="margin-top:10px"></div><button class="btn2" id="closeAdmin">Funga</button></div></div>
-<div class="modal" id="seraModal"><div class="box"><h3>📜 SERA NA SHERIA ZA TZ JAMII</h3>
-<p><b>1. Heshima:</b> Hakuna matusi, kejeli, chuki za kikabila / kidini / kisiasa, au kutishia mtu. Adhabu: Onyo → Kufungiwa siku 7 → Kufungiwa milele.</p>
-<p><b>2. Maudhui Marufuku:</b> Hakuna picha/video za uchi, ngono, vurugu, dawa za kulevya, silaha, au wizi. Admin anafuta mara moja na kumfungia mhusika.</p>
-<p><b>3. Ukweli:</b> Usichapishe uongo, uvumi, au habari za uongo kuhusu mtu / chama / klabu. Lazima uthibitishe kabla ya kuchapisha.</p>
-<p><b>4. Haki Miliki:</b> Usichapishe kazi ya mtu mwingine bila ruhusa. Muziki / video lazima iwe yako au una ruhusa.</p>
-<p><b>5. Biashara:</b> Kuuza lazima uweke bei ya kweli, picha ya kweli, na namba ya simu ya kweli. Matapeli wanafungiwa na kuripotiwa.</p>
-<p><b>6. Faragha:</b> Usichapishe namba ya simu, nyumba, au taarifa binafsi za mtu mwingine bila ruhusa yake.</p>
-<p><b>7. Kadi ya Chama:</b> Kujiunga na chama lazima uwe na Kadi halali. Kadi feki = kufungiwa.</p>
-<p><b>8. Faragha Yako:</b> Tunahifadhi Jina, Simu na Password yako kwenye Firebase salama. Hatushiriki taarifa zako na mtu mwingine bila ruhusa.</p>
-<p><b>9. Malipo:</b> Malipo ya Tangazo / Premium hayarudishwi baada ya tangazo kuanza kuonekana, isipokuwa kama app imeshindwa kuonyesha.</p>
-<p><b>10. Mamlaka ya Admin:</b> Admin anaweza kufuta post, kumfungia mtu, na kufuta akaunti inayovunja sheria hizi bila onyo.</p>
-<p class="small">Kwa kutumia TZ JAMII unakubali sheria hizi. Tarehe: 2026. Mmiliki: Fanuel Kisoma.</p>
-<button class="btn2" id="closeSera">Nimeelewa ✅</button></div></div>
-<div class="modal" id="chamaModal"><div class="box"><h3 id="chamaTitle">Jiunge na Chama</h3><p class="small">Lazima uwe na Kadi ya Chama.</p><input id="cName" placeholder="Jina kamili"><input id="cPhone" placeholder="Namba ya simu"><input id="cCard" placeholder="Namba ya Kadi ya Chama"><select id="cMkoa"></select><input id="cPass" type="password" placeholder="Weka Password"><button class="btn" id="doChamaBtn" style="width:100%">JIUNGE NA CHAMA 🪪</button><button class="btn2" id="closeChama">Funga</button></div></div>
-<div class="modal" id="tangazaModal"><div class="box"><h3>📢 Tangaza Biashara - Lipia na Uonekane Juu</h3><p class="small">Tangazo lako litaonekana juu ya feed kwa kila mtu. Lipa kwa Mix by Yas / Halotel, tuma uthibitisho kwa Admin.</p>
-<select id="adPkg"><option value="5000">Siku 1 - TSh 5,000</option><option value="20000">Wiki 1 - TSh 20,000</option><option value="50000">Mwezi 1 - TSh 50,000</option><option value="100000">Mwezi 3 - TSh 100,000 (Okoa!)</option></select>
-<input id="adTitle" placeholder="Jina la Biashara"><textarea id="adText" placeholder="Andika tangazo lako..."></textarea><input id="adPhone" placeholder="Namba yako ya M-Pesa / Simu"><label class="file" style="width:100%;text-align:center">📷 Paka Picha / 🎥 Video ya Tangazo<input type="file" id="adFileInp" accept="image/*,video/*"></label><div id="adPrev"></div><div id="adFileInfo" class="small"></div><label style="font-size:13px"><input type="checkbox" id="adWhats" checked style="width:auto"> Tuma pia kwa Admin kupitia WhatsApp (ili Admin aone hata kama ni simu tofauti)</label><p class="small"><b>Lipa kwenda:</b> Mix by Yas: <b>0656287155</b> | Halotel Money: <b>0628287155</b> | Jina: Fanuel Kisoma<br>Baada ya kulipa, Admin atakuthibitishia na tangazo litaanza kuonekana.</p>
-<button class="btn btnGold" id="doAdBtn" style="width:100%">TUMA OMBI LA TANGAZO 💰</button><button class="btn2" id="closeTangaza">Funga</button></div></div>
-<div class="modal" id="premModal"><div class="box"><h3>⭐ PREMIUM - TSh 10,000 / Mwezi</h3><p>✅ Post zako zinaonekana JUU kabisa<br>✅ Baji ya ⭐ kwenye jina lako<br>✅ Unaweza kupakia video kubwa zaidi<br>✅ Hakuna kikomo cha kuchapisha</p><input id="premPhone" placeholder="Namba ya simu / M-Pesa"><button class="btn" style="width:100%;background:#6a1b9a" id="doPremBtn">JIUNGE NA PREMIUM ⭐</button><p class="small">Lipa Mix by Yas 0656287155 / Halotel 0628287155 (Fanuel Kisoma), Admin atakupa Premium.</p><button class="btn2" id="closePrem">Funga</button></div></div>
-<div class="modal" id="searchModal"><div class="box"><h3>🔍 Matokeo ya Search</h3><div id="searchResults"></div><button class="btn2" id="closeSearch">Funga</button></div></div>
-<div class="modal" id="profileModal"><div class="box"><div id="profileContent"></div><button class="btn2" id="closeProfile">Funga</button></div></div>
-<div class="modal" id="notifModal"><div class="box"><h3>🔔 Notifications Zako</h3><div id="notifList"></div><button class="btn2" id="closeNotif">Funga - Zimesomwa ✅</button></div></div>
-<div id="viewer"><div id="viewerContent" style="width:100%;text-align:center"></div></div>
-<script>
+body{font-family:sans-serif;background:#f0f2f5;margin:0;padding:0}
+header{background:#0a7a5c;color:#fff;padding:14px;text-align:center;font-weight:900;font-size:22px}
+.box{background:#fff;margin:12px;padding:14px;border-radius:12px;box-shadow:0 1px 4px #0002}
+input,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box;font-size:15px}
+button{background:#0a7a5c;color:#fff;border:0;padding:12px;border-radius:10px;font-weight:800;width:100%;cursor:pointer}
+.post{background:#fff;margin:12px;padding:14px;border-radius:12px}
+small{color:#777}
+</style></head>
+<body>
+<header>🇹🇿 TZ JAMII - MPYA</header>
+<div class="box" id="authBox">
+<b>Ingia ili upost</b>
+<input id="email" placeholder="Email yako">
+<input id="pass" type="password" placeholder="Password">
+<button id="loginBtn">INGIA / JIANDIKISHE</button>
+<p id="authMsg"></p>
+</div>
+<div class="box">
+<textarea id="postText" placeholder="Andika jambo kwa Watanzania wote..."></textarea>
+<button id="postBtn">POST KWA WOTE</button>
+<p id="postMsg"></p>
+</div>
+<div id="feed"><p style="text-align:center">Inapakia post za Tanzania...</p></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// WEKA CONFIG YAKO HAPA - copy kutoka App ya zamani
 const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
-  authDomain: "tzjamii.firebaseapp.com",
-  projectId: "tzjamii",
-  storageBucket: "tzjamii.firebasestorage.app",
-  messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
+  apiKey: "WEKA_HAPA",
+  authDomain: "WEKA_HAPA",
+  projectId: "WEKA_HAPA",
+  storageBucket: "WEKA_HAPA",
+  messagingSenderId: "WEKA_HAPA",
+  appId: "WEKA_HAPA"
 };
-let firebaseApp=null, auth=null, dbFire=null, firebaseReady=false;
-try{ firebaseApp = firebase.initializeApp(firebaseConfig); auth = firebase.auth(); dbFire = firebase.firestore(); firebaseReady = true; }catch(e){ firebaseReady=false; }
-function savePosts(){ SV("tzjamii_posts_v5", posts); }
-// V11 - FOLLOWS ZOTE KWENYE FIRESTORE
-let allFollows = LS("tzjamii_follows",[]);
-function listenFollows(){
-  if(!firebaseReady) return;
-  dbFire.collection("follows").onSnapshot(function(snap){
-    let arr=[]; snap.forEach(function(d){ arr.push(d.data()); });
-    allFollows = arr; SV("tzjamii_follows", arr);
-  }, function(e){});
-}
-function listenPosts(){
-  if(!firebaseReady){ render(); return; }
-  dbFire.collection("posts").orderBy("id","desc").limit(100).onSnapshot(function(snap){
-    let arr=[]; snap.forEach(function(doc){ arr.push(doc.data()); });
-    if(arr.length){ posts = arr; SV("tzjamii_posts_v5", posts); }
-    render();
-  }, function(e){ render(); });
-}
-async function deletePostFromFirebase(id){ if(!firebaseReady) return; try{ await dbFire.collection("posts").doc(String(id)).delete(); }catch(e){} }
-async function updatePostInFirebase(post){ if(!firebaseReady) return; try{ await dbFire.collection("posts").doc(String(post.id)).set(post); }catch(e){} }
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').style.display='inline-block';});
-document.getElementById('installBtn').onclick=function(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{alert('Kwenye Chrome: Bonyeza ⋮ juu kulia > Add to Home Screen > Install.');}};
-const SECTIONS=[["Jamii","🏠 Jamii"],["Mikoa","🗺️ Mikoa"],["Mziki","🎵 Mziki"],["Movies","🎬 Movies"],["Soko","🛒 Soko"],["Michezo","⚽ Michezo"],["Vyama","🏛 Vyama"],["Matangazo","📢 Matangazo"],["Vipaji","⭐ Vipaji"]];
-const MIKOA=["Dar es Salaam","Arusha","Dodoma","Mwanza","Mbeya","Morogoro","Tanga","Kilimanjaro","Mtwara","Lindi","Ruvuma","Iringa","Njombe","Singida","Tabora","Kigoma","Shinyanga","Simiyu","Geita","Kagera","Mara","Manyara","Pwani","Rukwa","Katavi","Songwe","Pemba Kaskazini","Pemba Kusini","Mjini Magharibi","Kaskazini Unguja","Kusini Unguja"];
-const MICHEZO=["Mpira wa Miguu","Mpira wa Kikapu","Voliboli","Raga","Tenisi","Ngumi","Riadha","Kuogelea","Mpira wa Meza"];
-const CLUBS=["Simba SC","Yanga SC","Azam FC","Singida Black Stars","Coastal Union","Kagera Sugar","Namungo FC","Dodoma Jiji FC","Tabora United","Fountain Gate"];
-const VIPAJI=["Kuimba","Kucheza / Dance","Kuigiza","Kuchora / Uchoraji","Ucheshi / Comedy","Kuandika","Kupiga Picha","DJ / Beat","Kupika","Mitindo / Fashion","Mpira / Talanta ya Miguu"];
-const VYAMA=[{n:"CCM",c:"#1a7a2e",d:"Chama Cha Mapinduzi.",card:"CCM"},{n:"CHADEMA",c:"#c62828",d:"Chama cha Demokrasia na Maendeleo.",card:"CHADEMA"},{n:"ACT-Wazalendo",c:"#6a1b9a",d:"Alliance for Change and Transparency.",card:"ACT"},{n:"CUF",c:"#1565c0",d:"Civic United Front.",card:"CUF"}];
-let cur="Jamii", sub="", pendingBlob=null, pendingType="", adminTab="users";
-function LS(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
-function SV(k,v){localStorage.setItem(k,JSON.stringify(v))}
-let posts=LS("tzjamii_posts_v5",[]);
-if(!posts.length){posts=[{id:1,section:"Mikoa",sub:"Dar es Salaam",author:"Anna - Dar",init:"AM",color:"#1e88e5",text:"Dar leo joto kali!",likes:120,comments:[],time:"Saa 2",mediaId:null,mediaType:""},{id:2,section:"Michezo",sub:"Simba SC",author:"Juma - Simba",init:"JM",color:"#e53935",text:"Simba tunashinda!",likes:210,comments:[],time:"Saa 1",mediaId:null,mediaType:""},{id:3,section:"Vipaji",sub:"Kuimba",author:"Neema",init:"NM",color:"#8e24aa",text:"Wimbo mpya!",likes:88,comments:[],time:"Saa 4",mediaId:null,mediaType:""}];}
-function getAdminPass(){return localStorage.getItem("tzjamii_admin_pass")||"admin123"}
-function getBanned(){return LS("tzjamii_banned",[])}
-function getPremium(){return LS("tzjamii_premium",[])}
-function isBanned(phone,name){return getBanned().some(function(b){return b.phone===phone||b.name===name})}
-function isPremium(phone){return getPremium().includes(phone)}
-function getNotifs(){return LS("tzjamii_notifs",[])}
-function getFollows(){return allFollows.length?allFollows:LS("tzjamii_follows",[])}
-function cleanName(a){return (a||"").replace(" (Admin)","").replace(" (Tangazo Lililolipwa)","")}
-function addNotif(toName,toPhone,fromName,text){let n=getNotifs();n.unshift({to:toName,toPhone:toPhone||"",from:fromName,text:text,time:new Date().toLocaleString(),read:false});SV("tzjamii_notifs",n);updateNotifBadge()}
-function updateNotifBadge(){let u=getUser();let el=document.getElementById("notifCount");if(!u){el.style.display="none";return}let c=getNotifs().filter(function(n){return !n.read&&(n.to===u.name||(u.phone&&n.toPhone===u.phone))}).length;el.textContent=c;el.style.display=c>0?"inline-block":"none"}
-function isFollowing(targetName){let u=getUser();if(!u)return false;return getFollows().some(function(f){return cleanName(f.by)===cleanName(u.name)&&cleanName(f.target)===cleanName(targetName)})}
-function profKey(name,phone){return "prof_"+(phone||name).replace(/[^0-9a-zA-Z]/g,"_")}
-async function getProfPicUrl(name,phone){let b=await dbGet(profKey(name,phone));if(!b)return null;return URL.createObjectURL(b)}
-async function setProfPic(name,phone,blob){let id=profKey(name,phone);await dbPut(id,blob)}
-function dbDel(id){return new Promise(function(res){if(!db)return res();let t=db.transaction("media","readwrite");t.objectStore("media").delete(id);t.oncomplete=res;t.onerror=res})}
-let db=null;let req=indexedDB.open("tzjamii_db_v5",1);req.onupgradeneeded=function(e){e.target.result.createObjectStore("media",{keyPath:"id"})};req.onsuccess=async function(e){db=e.target.result; listenPosts(); listenFollows();};req.onerror=function(){ listenPosts(); listenFollows(); };
-function dbPut(id,b){return new Promise(function(res,rej){if(!db) return rej("no db"); let t=db.transaction("media","readwrite");t.objectStore("media").put({id:id,blob:b});t.oncomplete=res;t.onerror=rej})}
-function dbGet(id){return new Promise(function(res){if(!db)return res(null);let t=db.transaction("media","readonly");let r=t.objectStore("media").get(id);r.onsuccess=function(){res(r.result?r.result.blob:null)};r.onerror=function(){res(null)}})}
-function getUser(){try{return JSON.parse(localStorage.getItem("tzjamii_user")||"null")}catch(e){return null}}
-function getMembers(){return LS("tzjamii_members",[])}
-function updateUserLine(){let u=getUser();let mem=getMembers();let my=mem.filter(function(m){return u&&m.phone===u.phone});document.getElementById("userLine").textContent=u?("👋 "+u.name+(u.isAdmin?" • ADMIN":"")+(isPremium(u.phone)?" ⭐ PREMIUM":"")+(my.length?" • Vyama: "+my.map(function(m){return m.chama}).join(", "):"")):"Mgeni - Jiunge kuchapisha";document.getElementById("adminBtn").style.display=(u&&u.isAdmin)?"inline-block":"none";updateNotifBadge()}
-function renderNav(){document.getElementById("nav").innerHTML="";SECTIONS.forEach(function(s){let b=document.createElement("button");b.textContent=s[1];if(s[0]===cur)b.className="on";b.onclick=function(){cur=s[0];sub="";render()};document.getElementById("nav").appendChild(b)});}
-function closeAll(){document.querySelectorAll(".modal").forEach(function(m){m.classList.remove("open")})}
-document.getElementById("authBtn").onclick=function(){document.getElementById("authModal").classList.add("open")};
-document.getElementById("seraBtn").onclick=function(){document.getElementById("seraModal").classList.add("open")};
-document.getElementById("seraLink2").onclick=function(e){e.preventDefault();document.getElementById("seraModal").classList.add("open")};
-document.getElementById("tangazaBtn").onclick=function(){document.getElementById("tangazaModal").classList.add("open")};
-document.getElementById("tangazaLink2").onclick=function(e){e.preventDefault();document.getElementById("tangazaModal").classList.add("open")};
-document.getElementById("premBtn").onclick=function(){document.getElementById("premModal").classList.add("open")};
-document.getElementById("closeAuth").onclick=closeAll;document.getElementById("closeAdmin").onclick=closeAll;document.getElementById("closeChama").onclick=closeAll;document.getElementById("closeSera").onclick=closeAll;document.getElementById("closeTangaza").onclick=closeAll;document.getElementById("closePrem").onclick=closeAll;
-document.getElementById("closeSearch").onclick=closeAll;document.getElementById("closeProfile").onclick=closeAll;document.getElementById("closeNotif").onclick=function(){let u=getUser();if(u){let ns=getNotifs();ns.forEach(function(n){if(n.to===u.name||(u.phone&&n.toPhone===u.phone))n.read=true});SV("tzjamii_notifs",ns);updateNotifBadge()}closeAll()};
-document.getElementById("profileBtn").onclick=function(){let u=getUser();if(!u){document.getElementById("authModal").classList.add("open");return}openProfile(u.name,u.phone)};
-document.getElementById("notifBtn").onclick=function(){let u=getUser();if(!u){document.getElementById("authModal").classList.add("open");return}let list=getNotifs().filter(function(n){return n.to===u.name||(u.phone&&n.toPhone===u.phone)});document.getElementById("notifList").innerHTML=list.length?list.map(function(n){return "<div class='card "+(n.read?"":"notifUnread")+"'><b>"+n.from+"</b>: "+n.text+"<div class='small'>"+n.time+"</div></div>"}).join(""):"<div class='card'>Hakuna notification bado.</div>";document.getElementById("notifModal").classList.add("open");let ns=getNotifs();ns.forEach(function(n){if(n.to===u.name||(u.phone&&n.toPhone===u.phone))n.read=true});SV("tzjamii_notifs",ns);updateNotifBadge()};
-async function openProfile(name,phone){
-  let uname=cleanName(name);
-  let myPosts=posts.filter(function(p){return cleanName(p.author)===uname});
-  let likes=myPosts.reduce(function(s,p){return s+p.likes},0);
-  let mem=getMembers().filter(function(m){return m.name===uname||(phone&&m.phone===phone)});
-  let users=LS("tzjamii_users",[]);let uobj=users.find(function(x){return x.name===uname});let uphone=phone||(uobj?uobj.phone:"");
-  // V11 - Tumia allFollows kutoka Firestore
-  let followsNow = getFollows();
-  let followers=followsNow.filter(function(f){return cleanName(f.target)===uname}).length;
-  let following=followsNow.filter(function(f){return cleanName(f.by)===uname}).length;
-  let me=getUser();let isMe=me&&cleanName(me.name)===uname;let fol=isFollowing(uname);
-  let picUrl=await getProfPicUrl(uname,uphone);let picHtml=picUrl?('<img class="profPic" src="'+picUrl+'">'):("<div class='avatar' style='width:90px;height:90px;font-size:32px;margin:auto'>"+uname.slice(0,2).toUpperCase()+"</div>");
-  document.getElementById("profileContent").innerHTML="<div style='text-align:center'>"+picHtml+"<h3>"+uname+(isPremium(uphone)?" ⭐ PREMIUM":"")+"</h3><p class='small'>"+(uphone?("Simu: "+uphone+" • "):"")+(mem.length?("Vyama: "+mem.map(function(m){return m.chama}).join(", ")):"Hana chama bado")+"</p><p><b>"+myPosts.length+"</b> Post • <b>"+likes+"</b> Likes • <b>"+followers+"</b> Followers • <b>"+following+"</b> Anawafuata</p>"+(isMe?"<label class='file'>📷 Badilisha Picha ya Profile<input type='file' id='profFileInp' accept='image/*'></label><br><button class='btn2' id='delProfPic'>🗑 Ondoa Picha</button><p class='small'>Hii ni Profile Yako ✅</p><button class='btn2' id='myLogout'>Toka (Log Out)</button>":("<button class='btn' id='followBtn'>"+(fol?"✅ Unamfollow - Bonyeza Kuunfollow":"➕ Mfollow")+"</button>"))+"</div><hr><b>Post zake:</b><div id='profPosts'></div>";
-  document.getElementById("profileModal").classList.add("open");
-  let pp=document.getElementById("profPosts");pp.innerHTML=myPosts.length?myPosts.map(function(p){return "<div class='card'><b>"+p.section+(p.sub?" • "+p.sub:"")+"</b><p>"+p.text.slice(0,120)+"</p><div class='small'>❤️ "+p.likes+" • 💬 "+p.comments.length+" • "+p.time+"</div></div>"}).join(""):"<p class='small'>Hana post bado.</p>";
-  // V11 - FOLLOW BUTTON ILIYOREKEBISHWA KABISA
-  let fb=document.getElementById("followBtn");
-  if(fb) fb.onclick = async function(){
-    let me2=getUser();
-    if(!me2){ document.getElementById("authModal").classList.add("open"); return; }
-    if(cleanName(me2.name)===uname){ alert("Huwezi kujifollow mwenyewe"); return; }
-    fb.textContent="Subiri..."; fb.disabled=true;
-    try{
-      let fid=(cleanName(me2.name)+"_TO_"+uname).replace(/[^a-zA-Z0-9_]/g,"_");
-      if(firebaseReady){
-       
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let user = null;
+onAuthStateChanged(auth, u=>{
+  user = u;
+  document.getElementById('authMsg').textContent = u ? "Umeingia kama: "+u.email : "Haujaingia bado";
+});
+
+document.getElementById('loginBtn').onclick = async ()=>{
+  const e=document.getElementById('email').value, p=document.getElementById('pass').value;
+  if(!e||!p) return alert("Weka email na password");
+  try{ await signInWithEmailAndPassword(auth,e,p); }
+  catch(err){ try{ await createUserWithEmailAndPassword(auth,e,p); alert("Akaunti mpya imeundwa!"); }catch(e2){ alert(e2.message); } }
+};
+
+document.getElementById('postBtn').onclick = async ()=>{
+  if(!user) return alert("Ingia kwanza");
+  const t=document.getElementById('postText').value.trim();
+  if(!t) return alert("Andika kwanza");
+  await addDoc(collection(db,"posts"),{text:t, author:user.email, createdAt:serverTimestamp()});
+  document.getElementById('postText').value="";
+  document.getElementById('postMsg').textContent="Imepost! Watu wote wataona.";
+};
+
+// HAPA NDIPO KILA MTU ANAONA POST ZA WOTE - KUTOKA FIRESTORE, SIO SIMU YAKO
+const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
+onSnapshot(q, snap=>{
+  const feed=document.getElementById('feed');
+  if(snap.empty){ feed.innerHTML="<p style='text-align:center'>Hakuna post bado. Kuwa wa kwanza!</p>"; return; }
+  feed.innerHTML="";
+  snap.forEach(d=>{
+    const p=d.data();
+    const div=document.createElement('div'); div.className='post';
+    div.innerHTML="<b>"+(p.author||"MtanZania")+"</b><br>"+p.text+"<br><small>"+new Date().toLocaleString()+"</small>";
+    feed.appendChild(div);
+  });
+});
+</script>
+</body></html>
