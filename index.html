@@ -30,13 +30,20 @@ button{padding:11px;background:#0a7a4a;color:#fff;border:none;border-radius:10px
 <button onclick="setCat('Vyama',this)">👥 Vyama</button>
 <button onclick="setCat('Klabu',this)">🏆 Klabu</button>
 </div>
-
 <div class="card" id="authCard">
-<div id="userInfo" style="font-weight:bold">Karibu TZ JAMII - Ingia hapa chini</div>
+<div id="userInfo" style="font-weight:bold">Karibu TZ JAMII</div>
 <div id="loginForm">
-<input id="email" placeholder="Email"><input id="password" type="password" placeholder="Password">
-<button id="loginBtn" style="width:100%">INGIA / JIANDIKISHE</button><p id="loginMsg"></p>
+<input id="myName" placeholder="👤 Jina lako - mfano Fanuel Kisoma">
+<input id="myPhone" placeholder="📞 Namba ya Simu - mfano 0761234567">
+<input id="myPic" placeholder="🖼️ Link ya Picha yako">
+<input id="password" type="password" placeholder="🔒 Password">
+<button id="loginBtn" style="width:100%">INGIA / JIANDIKISHE</button>
+<p id="loginMsg"></p>
 </div>
+<button id="logoutBtn" onclick="window.doLogout()" style="display:none;width:100%;background:#ff4444">TOKA</button>
+<input id="searchInput" placeholder="🔍 Tafuta mtu / post..." oninput="doSearch(this.value)">
+</div>
+
 <button id="logoutBtn" onclick="window.doLogout()" style="display:none;width:100%;background:#ff4444">TOKA (LOGOUT)</button>
 <hr>
 <b>✏️ Profile Yangu</b>
