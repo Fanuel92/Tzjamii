@@ -23,9 +23,9 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 <div id="loginForm">
 <input id="myName" placeholder="👤 Jina lako - mfano Fanuel Kisoma">
 <input id="myPhone" placeholder="📞 Namba ya Simu - mfano 0628285096">
+<p class="small">📸 Chagua Picha yako kutoka simu:</p>
 <input type="file" id="myPicFile" accept="image/*">
 <img id="myPicPreview" style="display:none;width:70px;height:70px;border-radius:50%;object-fit:cover;margin-top:5px">
-<p class="small">Chagua picha kutoka kwenye simu yako</p>
 <input id="password" type="password" placeholder="🔒 Password">
 <button class="btn" onclick="ingiaSasa()">INGIA / JIANDIKISHE</button>
 <p id="loginMsg" class="small"></p>
@@ -38,7 +38,8 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 <select id="postCat"></select>
 <select id="postSub"></select>
 <textarea id="postText" placeholder="Andika jambo..."></textarea>
-<input type="file" id="postMediaFile" accept="image/*,video/*">
+<p class="small">📸 Chagua Picha ya Post (si lazima):</p>
+<input type="file" id="postMediaFile" accept="image/*">
 <img id="postPreview" style="display:none;width:100%;border-radius:10px;margin-top:5px">
 <button class="btn" id="postBtn">POST</button>
 </div>
@@ -53,13 +54,12 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, on
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
+  apiKey: "WEKA APIKEY YAKO - ile kwenye picha yako inayoanza na AIzaSyC_bMAM3",
   authDomain: "tzjamii.firebaseapp.com",
   projectId: "tzjamii",
   storageBucket: "tzjamii.firebasestorage.app",
   messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
+  appId: "WEKA APPID YAKO - ile inayoanza na 1:210377984835:web:cfc328a7"
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -80,6 +80,40 @@ const LISTS = {
   "Neno la MUNGU":["Maombi","Somo","Wimbo"]
 };
 let currentCat="All", currentUser=null, myProfile={}, allPosts=[];
+
+// KUPAKIA PICHA - BILA LINK, KUTOKA SIMU MOJA KWA MOJA
+function fileToBase64(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if(w > 800){ h = h * 800 / w; w = 800; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL("image/jpeg",0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+document.getElementById("myPicFile").addEventListener("change", async(e)=>{
+  if(!e.target.files[0]) return;
+  const b64 = await fileToBase64(e.target.files[0]);
+  window.tempProfilePic = b64;
+  const prev = document.getElementById("myPicPreview");
+  prev.src = b64; prev.style.display = "block";
+});
+document.getElementById("postMediaFile").addEventListener("change", async(e)=>{
+  if(!e.target.files[0]) return;
+  const b64 = await fileToBase64(e.target.files[0]);
+  window.tempPostPic = b64;
+  const prev = document.getElementById("postPreview");
+  prev.src = b64; prev.style.display = "block";
+});
 
 // TABS
 let tabsHtml='<button class="active" onclick="setCat(\'All\',this)">🏠 Nyumbani</button>';
@@ -105,12 +139,11 @@ window.updateSub=()=>{
 window.updateSub();
 document.getElementById("postCat").addEventListener("change",window.updateSub);
 
-// LOGIN - hii ndiyo pekee
 window.ingiaSasa=async()=>{
   document.getElementById("loginMsg").innerText="Najaribu...";
   const name=document.getElementById("myName").value.trim();
   const phone=document.getElementById("myPhone").value.trim();
-  const pic=document.getElementById("myPic").value.trim();
+  const pic=window.tempProfilePic || "";
   const p=document.getElementById("password").value;
   if(!name||!phone||!p){ alert("Jaza Jina, Namba na Password!"); return; }
   if(p.length<6){ alert("Password iwe angalau 6, mfano 123456"); return; }
@@ -129,7 +162,6 @@ window.ingiaSasa=async()=>{
 };
 window.doLogout=async()=>{ await signOut(auth); location.reload(); };
 
-// AUTH STATE
 onAuthStateChanged(auth,async(user)=>{
   if(user){
     currentUser=user;
@@ -142,7 +174,6 @@ onAuthStateChanged(auth,async(user)=>{
   }
 });
 
-// POST
 document.getElementById("postBtn").onclick=async()=>{
   if(!currentUser){ alert("Ingia kwanza!"); return; }
   const text=document.getElementById("postText").value.trim();
@@ -151,14 +182,14 @@ document.getElementById("postBtn").onclick=async()=>{
     uid:currentUser.uid, name:myProfile.name||"Mtumiaji", pic:myProfile.pic||"",
     cat:document.getElementById("postCat").value,
     sub:document.getElementById("postSub").value||"",
-    text:text, media:document.getElementById("postMedia").value.trim(),
+    text:text, media:window.tempPostPic || "",
     likes:[], createdAt:Date.now(), pinned:false
   });
   document.getElementById("postText").value="";
+  window.tempPostPic=""; document.getElementById("postPreview").style.display="none";
   alert("Post imetumwa!");
 };
 
-// LISTEN POSTS
 const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
 onSnapshot(q,(snap)=>{
   allPosts=[]; snap.forEach(d=>{ allPosts.push({id:d.id,...d.data()}); });
