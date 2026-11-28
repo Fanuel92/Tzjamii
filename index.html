@@ -66,7 +66,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 // ⭐⭐⭐ SEHEMU YA APIKEY - BADILISHA HAPA TU ⭐⭐⭐
-const firebaseConfig = { apiKey: "WEKA_APIKEY_YAKO_HAPA", authDomain: "tzjamii.firebaseapp.com", projectId: "tzjamii", storageBucket: "tzjamii.firebasestorage.app", messagingSenderId: "210377984835", appId: "WEKA_APPID_YAKO_HAPA" };
+const firebaseConfig = {
+  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
+  authDomain: "tzjamii.firebaseapp.com",
+  projectId: "tzjamii",
+  storageBucket: "tzjamii.firebasestorage.app",
+  messagingSenderId: "210377984835",
+  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
+  measurementId: "G-KZ5M48VLDJ"
+};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
