@@ -91,8 +91,15 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = { apiKey: "WEKA APIKEY YAKO", authDomain: "tzjamii.firebaseapp.com", projectId: "tzjamii", storageBucket: "tzjamii.firebasestorage.app", messagingSenderId: "210377984835", appId: "WEKA APPID YAKO" };
-const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
+  authDomain: "tzjamii.firebaseapp.com",
+  projectId: "tzjamii",
+  storageBucket: "tzjamii.firebasestorage.app",
+  messagingSenderId: "210377984835",
+  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
+  measurementId: "G-KZ5M48VLDJ"
+};
 const ADMIN_PHONE = "0628285096";
 // MANENO MAKALI YALIYOZUIWA - App itazuia post yenye haya
 const BANNED_WORDS = ["malaya","msenge","kuma","mboo","mkundu","kinyago","mbwa","pumbavu sana","mjinga sana","k*","fuck","shit","bitch","tomba","nyoko","kuma yako","kufirwa"];
