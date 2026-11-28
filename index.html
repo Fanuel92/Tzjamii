@@ -1,220 +1,165 @@
 <!DOCTYPE html>
 <html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TZ JAMII V3</title>
+<title>TZ JAMII-Kubwa kuliko</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#eef2f5}
-header{background:#0a7a3a;color:#fff;padding:12px;text-align:center;font-weight:900;font-size:20px}
-.tabs{display:flex;overflow-x:auto;background:#fff;gap:6px;padding:8px}
+body{margin:0;font-family:sans-serif;background:#eef2f5;padding-bottom:70px}
+header{background:#0a7a3a;color:#fff;padding:12px;text-align:center;font-weight:900;font-size:20px;position:sticky;top:0;z-index:10}
+.topbar{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:8px 10px}
+.tabs{display:flex;overflow-x:auto;background:#fff;gap:6px;padding:8px;position:sticky;top:52px;z-index:9}
 .tabs button{border:0;background:#eee;padding:8px 12px;border-radius:20px;font-weight:700;white-space:nowrap}
 .tabs button.active{background:#0a7a3a;color:#fff}
 .card{background:#fff;margin:10px;padding:12px;border-radius:12px}
 input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box;font-size:16px}
 .btn{background:#0a7a3a;color:#fff;border:0;padding:12px;width:100%;border-radius:10px;font-weight:900;font-size:16px}
+.btn2{background:#eee;border:0;padding:7px 12px;border-radius:20px;font-weight:700}
 .post{border-top:1px solid #eee;padding:10px 0}
-.post img{max-width:100%;border-radius:10px}
+.post img,.post video{max-width:100%;border-radius:10px}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;vertical-align:middle}
 .small{color:#666;font-size:13px}
+.badge{background:#ffcc00;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:900}
+.badgePaid{background:#0a7a3a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px}
+.notif{background:#fff3cd;padding:8px;border-radius:10px;margin:5px 0;font-size:14px}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px;border-top:1px solid #ddd;z-index:20}
+.bottomnav button{border:0;background:none;font-size:20px}
+.adminBox{background:#fff0f0;border:2px solid #c00;padding:10px;border-radius:10px;margin:10px}
+.policyBox{background:#fff8e1;border:2px solid #ff9800;padding:12px;border-radius:12px;margin:10px}
+.policyBox h3{margin:0 0 8px 0;color:#c00}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;padding:15px;overflow-y:auto}
+.modalInner{background:#fff;padding:15px;border-radius:12px;max-width:500px;margin:20px auto}
 </style></head><body>
-<header>🇹🇿 TZ JAMII V3</header>
+<header>🇹🇿 TZ JAMII V4.1</header>
+<div class="topbar"><span id="userInfo">Karibu</span><span><button class="btn2" onclick="showNotifs()">🔔 <span id="notifCount">0</span></button> <button class="btn2" onclick="showInbox()">💬 Inbox</button> <button class="btn2" onclick="openPolicy()">📜 Sera</button></span></div>
+
+<div class="card" style="text-align:center;background:#fffbe6"><b>📢 MATANGAZO</b><br><span class="small">Nafasi ya AdSense / Matangazo ya kulipia</span><div id="paidAdsTop"></div></div>
+
+<!-- SERA NA SHERIA - INAONEKANA KWA WOTE -->
+<div class="policyBox"><h3>📜 SERA NA SHERIA ZA TZ JAMII - SOMA KABLA YA KUTUMIA</h3>
+<b>🚫 1. PICHA / VIDEO ZA UTUPU MARUFUKU KABISA:</b> Hairuhusiwi kupost picha za utupu, video za ngono, sehemu za siri za mwili, wala picha zinazoonyesha ngono. Mtu atakayepost atafungiwa mara moja.<br><br>
+<b>🚫 2. LUGHA KALI NA MATUSI MARUFUKU:</b> Hairuhusiwi kutukana, kudhalilisha, kutukana mama / familia, ubaguzi wa kabila, dini, rangi, au kumdhalilisha mtu. Tumia lugha ya heshima.<br><br>
+<b>🚫 3. KUTISHA, UONGO NA WIZI MARUFUKU:</b> Hairuhusiwi kumtisha mtu, kueneza uongo, kutapeli, kuiba picha za mtu bila ruhusa, wala kueneza habari za uongo.<br><br>
+<b>⚖️ ADHABU:</b> Onyo la 1 > Kufungiwa siku 7 > Kufungiwa Kabisa na Admin. Ukiona mtu amevunja sheria, bonyeza <b>🚩 Report</b> kwenye post yake.<br>
+<button class="btn2" onclick="openPolicy()">Soma Sera Kamili</button>
+</div>
+
 <div class="tabs" id="tabs"></div>
 
 <div class="card" id="authCard">
 <b>Karibu TZ JAMII</b>
-<div id="userInfo"></div>
 <div id="loginForm">
-<input id="myName" placeholder="👤 Jina lako - mfano Fanuel Kisoma">
+<input id="myName" placeholder="👤 Jina lako">
 <input id="myPhone" placeholder="📞 Namba ya Simu - mfano 0628285096">
-<p class="small">📸 Chagua Picha yako kutoka simu:</p>
-<input type="file" id="myPicFile" accept="image/*">
-<img id="myPicPreview" style="display:none;width:70px;height:70px;border-radius:50%;object-fit:cover;margin-top:5px">
-<input id="password" type="password" placeholder="🔒 Password">
-<button class="btn" onclick="ingiaSasa()">INGIA / JIANDIKISHE</button>
-<p id="loginMsg" class="small"></p>
+<p class="small">📸 Picha yako:</p><input type="file" id="myPicFile" accept="image/*"><img id="myPicPreview" style="display:none;width:70px;height:70px;border-radius:50%;object-fit:cover">
+<input id="password" type="password" placeholder="🔒 Password (angalau 6)">
+<label style="display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:8px 0"><input type="checkbox" id="agreePolicy" style="width:20px;height:20px;margin:0"> <span>Nimesoma na <b>nakubali Sera na Sheria</b> za TZ JAMII - Sitapost picha za utupu, video za ngono, wala matusi makali. <a href="#" onclick="openPolicy();return false">Soma Sera</a></span></label>
+<button class="btn" onclick="ingiaSasa()">INGIA / JIANDIKISHE</button><p id="loginMsg" class="small"></p>
 </div>
 <button class="btn" id="logoutBtn" style="display:none;background:#c00" onclick="doLogout()">TOKA</button>
-<input id="searchInput" placeholder="🔍 Tafuta mtu / post...">
+<input id="searchInput" placeholder="🔍 Tafuta mtu / post / soko...">
+<div id="notifBox" style="display:none"></div><div id="inboxBox" style="display:none"></div>
 </div>
+
+<div class="card" id="adminCard" style="display:none"><div class="adminBox"><b>🛡️ ADMIN PANEL</b><br><button class="btn" onclick="showAdmin()">FUNGUA ADMIN - Thibitisha / Ban / Report</button></div><div id="adminBox"></div></div>
 
 <div class="card" id="postCard" style="display:none">
-<select id="postCat"></select>
-<select id="postSub"></select>
-<textarea id="postText" placeholder="Andika jambo..."></textarea>
-<p class="small">📸 Chagua Picha ya Post (si lazima):</p>
-<input type="file" id="postMediaFile" accept="image/*">
-<img id="postPreview" style="display:none;width:100%;border-radius:10px;margin-top:5px">
-<button class="btn" id="postBtn">POST</button>
+<select id="postCat"></select><select id="postSub"></select>
+<textarea id="postText" placeholder="Andika jambo kwa heshima..."></textarea>
+<select id="postType"><option value="post">📝 Post ya kawaida</option><option value="paid_ad">💰 TANGAZO LA KULIPIA</option></select>
+<div id="paidInfo" style="display:none"><input id="paidAmount" placeholder="Umelipa kiasi gani?"><input id="paidRef" placeholder="Namba ya Muamala / Risiti"></div>
+<p class="small">📸 Picha / 🎥 Video: <b>🚫 Usipost picha za utupu / ngono - utafungiwa</b></p><input type="file" id="postMediaFile" accept="image/*,video/*"><img id="postPreview" style="display:none;width:100%;border-radius:10px">
+<input id="postYoutube" placeholder="▶️ Link ya YouTube">
+<label style="display:flex;gap:8px;font-size:13px"><input type="checkbox" id="agreePost" style="width:18px"> <span>Nathibitisha post hii haina picha za utupu, haina matusi, na nimefuata Sera.</span></label>
+<button class="btn" id="postBtn">POST - Itakwenda kwa Admin kwanza</button>
 </div>
 
-<div class="card"><b>🏠 <span id="filterTitle">Nyumbani - Post zote</span></b>
-<select id="subFilter"><option value="">- Zote -</option></select>
-<div id="postList"></div></div>
+<div class="card"><b>🏠 <span id="filterTitle">Nyumbani</span></b><select id="subFilter"><option value="">- Zote -</option></select><div id="postList"></div></div>
+<div class="card"><b>👥 Watumiaji - Follow</b><div id="userList"></div></div>
+<div class="bottomnav"><button onclick="window.scrollTo(0,0)">🏠</button><button onclick="showNotifs()">🔔</button><button onclick="showInbox()">💬</button><button onclick="showMyProfile()">👤</button><button onclick="openPolicy()">📜</button></div>
+
+<!-- MODAL YA SERA KAMILI -->
+<div class="modal" id="policyModal"><div class="modalInner"><h2>📜 SERA NA SHERIA KAMILI ZA TZ JAMII</h2>
+<p><b>1. PICHA NA VIDEO ZA UTUPU:</b> Marufuku kabisa kupost, kutuma kwenye Inbox, au kucomment picha za utupu, video za ngono, picha za sehemu za siri, au viungo vinavyoonyesha ngono. Hii inahusu watoto na watu wazima. Mtu atakayefanya hivyo atafungiwa kabisa bila onyo.</p>
+<p><b>2. MATUSI NA LUGHA KALI:</b> Marufuku kutukana mama, baba, familia, kutumia matusi ya ngono, kudhalilisha mtu kwa kabila, dini, ulemavu, rangi, au hali yake. Kama unakasirika, andika kwa heshima au usiandike. App itakuzuia kiotomatiki ukiandika matusi makali.</p>
+<p><b>3. KUTISHA NA KUONEA:</b> Marufuku kumtisha mtu, kumfuata-fuata, kutoa namba yake / anapoishi bila ruhusa, au kumdhalilisha hadharani.</p>
+<p><b>4. UONGO NA UTAPELI:</b> Marufuku kueneza habari za uongo, kutapeli watu kwenye Soko / Matangazo, kuuza bidhaa feki ukisema ni halisi, au kuiga akaunti ya mtu mwingine.</p>
+<p><b>5. HAKI ZA WENGINE:</b> Usipost picha / video ya mtu bila ruhusa yake. Usipost kazi ya mtu mwingine ukisema ni yako.</p>
+<p><b>6. ADHABU:</b> 1. Onyo na post kufutwa. 2. Kufungiwa siku 7. 3. Kufungiwa kabisa. Admin anaweza kufuta, kuban, na kufungua akaunti.</p>
+<p><b>7. KURIPOTI:</b> Ukiona post inayovunja sheria, bonyeza 🚩 Report. Admin ataiona na kuichukulia hatua ndani ya masaa 24.</p>
+<p><b>8. FARAGHA:</b> Usitume namba za siri, password, au taarifa za kibenki hadharani. Tumia Inbox kwa mambo binafsi.</p>
+<button class="btn" onclick="closePolicy()">NIMESELEWA NA NAKUBALI</button></div></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
-  authDomain: "tzjamii.firebaseapp.com",
-  projectId: "tzjamii",
-  storageBucket: "tzjamii.firebasestorage.app",
-  messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = { apiKey: "WEKA APIKEY YAKO", authDomain: "tzjamii.firebaseapp.com", projectId: "tzjamii", storageBucket: "tzjamii.firebasestorage.app", messagingSenderId: "210377984835", appId: "WEKA APPID YAKO" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+const ADMIN_PHONE = "0628285096";
+// MANENO MAKALI YALIYOZUIWA - App itazuia post yenye haya
+const BANNED_WORDS = ["malaya","msenge","kuma","mboo","mkundu","kinyago","mbwa","pumbavu sana","mjinga sana","k*","fuck","shit","bitch","tomba","nyoko","kuma yako","kufirwa"];
+function hasBannedWord(txt){const t=(txt||"").toLowerCase();return BANNED_WORDS.find(w=>t.includes(w));}
 const CATS = ["Michezo","Mikoa","Matangazo","Soko","Vipaji","Vyama","Klabu","Movies","Mziki","Mahusiano","Neno la MUNGU"];
-const LISTS = {
-  "Michezo":["Mpira wa Miguu","Mpira wa Kikapu","Riadha"],
-  "Mikoa":["Dar es Salaam","Arusha","Dodoma","Mwanza"],
-  "Matangazo":["Biashara","Ajira","Nyumba"],
-  "Soko":["Nguo","Viatu","Simu","Chakula"],
-  "Vipaji":["Kuumba","Kuigiza","Mpira"],
-  "Vyama":["Vijana","Wanawake","Wafanyabiashara"],
-  "Klabu":["Simba SC","Yanga SC","Azam FC"],
-  "Movies":["Kichina","Kihindi","Kibongo"],
-  "Mziki":["Bongo Flava","Gospel","Taarab"],
-  "Mahusiano":["Urafiki","Uchumba","Ndoa"],
-  "Neno la MUNGU":["Maombi","Somo","Wimbo"]
-};
-let currentCat="All", currentUser=null, myProfile={}, allPosts=[];
-
-// KUPAKIA PICHA - BILA LINK, KUTOKA SIMU MOJA KWA MOJA
-function fileToBase64(file){
-  return new Promise((resolve)=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const canvas = document.createElement("canvas");
-        let w = img.width, h = img.height;
-        if(w > 800){ h = h * 800 / w; w = 800; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL("image/jpeg",0.7));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-document.getElementById("myPicFile").addEventListener("change", async(e)=>{
-  if(!e.target.files[0]) return;
-  const b64 = await fileToBase64(e.target.files[0]);
-  window.tempProfilePic = b64;
-  const prev = document.getElementById("myPicPreview");
-  prev.src = b64; prev.style.display = "block";
-});
-document.getElementById("postMediaFile").addEventListener("change", async(e)=>{
-  if(!e.target.files[0]) return;
-  const b64 = await fileToBase64(e.target.files[0]);
-  window.tempPostPic = b64;
-  const prev = document.getElementById("postPreview");
-  prev.src = b64; prev.style.display = "block";
-});
-
-// TABS
-let tabsHtml='<button class="active" onclick="setCat(\'All\',this)">🏠 Nyumbani</button>';
-CATS.forEach(c=>{ tabsHtml+='<button onclick="setCat(\''+c+'\',this)">'+c+'</button>'; });
-document.getElementById("tabs").innerHTML=tabsHtml;
-let pcHtml=""; CATS.forEach(c=>pcHtml+='<option>'+c+'</option>');
-document.getElementById("postCat").innerHTML=pcHtml;
-
-window.setCat=(cat,btn)=>{
-  currentCat=cat;
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-  if(btn) btn.classList.add("active");
-  document.getElementById("filterTitle").innerText=(cat==="All"?"Nyumbani - Post zote":cat);
-  let sf=document.getElementById("subFilter");
-  if(cat==="All"){ sf.innerHTML='<option value="">- Zote -</option>'; }
-  else { sf.innerHTML='<option value="">- Zote -</option>'+(LISTS[cat]||[]).map(x=>'<option>'+x+'</option>').join(""); }
-  render();
-};
-window.updateSub=()=>{
-  let cat=document.getElementById("postCat").value;
-  document.getElementById("postSub").innerHTML=(LISTS[cat]||[]).map(x=>'<option>'+x+'</option>').join("");
-};
-window.updateSub();
-document.getElementById("postCat").addEventListener("change",window.updateSub);
-
+const REGIONS = ["Dar es Salaam","Arusha","Dodoma","Mwanza","Mbeya","Morogoro","Tanga","Kilimanjaro","Pwani","Mtwara","Lindi","Ruvuma","Iringa","Njombe","Songwe","Rukwa","Katavi","Kigoma","Kagera","Geita","Shinyanga","Simiyu","Mara","Manyara","Singida","Tabora","Pemba Kaskazini","Pemba Kusini","Unguja Kaskazini","Unguja Kusini","Mjini Magharibi"];
+const LISTS = {"Michezo":["Ligi Kuu Tanzania","Yanga SC","Simba SC","Azam FC","Singida","Man United","Arsenal","Chelsea","Liverpool","Man City","Real Madrid","Barcelona","Riadha","Mpira wa Kikapu","Ngumi"],"Mikoa":REGIONS,"Matangazo":["Biashara","Ajira","Nyumba za Kupanga","Viwanja","Magari","Huduma","Shule","Hospitali","Dini","Matukio"],"Soko":["Nguo za Kiume","Nguo za Kike","Nguo za Watoto","Viatu","Simu","Laptop","TV","Fridge","Samani","Chakula","Vituo vya Urembo","Mifugo"],"Vipaji":["Kuumba","Kuigiza","Mpira","Kuchekesha","Kupiga Picha","Kuchora","Kupika","Kushona","DJ","MC"],"Vyama":["Vijana","Wanawake","Wafanyabiashara","Wakulima","Wavuvi","Wazee","Wanafunzi"],"Klabu":["Simba SC","Yanga SC","Azam FC","Singida Black Stars","Coastal Union","Namungo","Kagera Sugar"],"Movies":["Kibongo","Kichina","Kihindi","Kimarekani","Kinigeria","Korea","Tamthilia","Katuni"],"Mziki":["Bongo Flava","Gospel","Taarab","Singeli","Hip Hop","R&B","Zouk","Amapiano","Muziki wa Asili"],"Mahusiano":["Urafiki","Uchumba","Ndoa","Familia","Ushauri"],"Neno la MUNGU":["Maombi","Somo la Biblia","Wimbo","Ushuhuda","Mahubiri","Mkesha"]};
+let currentCat="All", currentUser=null, myProfile={}, allPosts=[], allUsers=[], myNotifs=[], myInbox=[];
+window.openPolicy=()=>{document.getElementById("policyModal").style.display="block";};
+window.closePolicy=()=>{document.getElementById("policyModal").style.display="none";document.getElementById("agreePolicy").checked=true;};
+function fileToBase64(file){return new Promise((res)=>{const r=new FileReader();r.onload=(e)=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas");let w=img.width,h=img.height;if(w>800){h=h*800/w;w=800;}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);res(c.toDataURL("image/jpeg",0.7));};img.src=e.target.result;};r.readAsDataURL(file);});}
+document.getElementById("myPicFile").addEventListener("change",async(e)=>{if(!e.target.files[0])return;const b=await fileToBase64(e.target.files[0]);window.tempProfilePic=b;const p=document.getElementById("myPicPreview");p.src=b;p.style.display="block";});
+document.getElementById("postMediaFile").addEventListener("change",async(e)=>{if(!e.target.files[0])return;const f=e.target.files[0];if(f.type.startsWith("video/")){const r=new FileReader();r.onload=(ev)=>{window.tempPostPic=ev.target.result;window.tempPostIsVideo=true;};r.readAsDataURL(f);alert("Video imechaguliwa! Kumbuka: Video za utupu marufuku.");}else{const b=await fileToBase64(f);window.tempPostPic=b;window.tempPostIsVideo=false;const p=document.getElementById("postPreview");p.src=b;p.style.display="block";}});
+document.getElementById("postType").addEventListener("change",(e)=>{document.getElementById("paidInfo").style.display=e.target.value==="paid_ad"?"block":"none";});
+let tabsHtml='<button class="active" onclick="setCat(\'All\',this)">🏠 Nyumbani</button>';CATS.forEach(c=>tabsHtml+='<button onclick="setCat(\''+c+'\',this)">'+c+'</button>');document.getElementById("tabs").innerHTML=tabsHtml;
+let pcHtml="";CATS.forEach(c=>pcHtml+='<option>'+c+'</option>');document.getElementById("postCat").innerHTML=pcHtml;
+window.setCat=(cat,btn)=>{currentCat=cat;document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));if(btn)btn.classList.add("active");document.getElementById("filterTitle").innerText=cat==="All"?"Nyumbani":cat;let sf=document.getElementById("subFilter");if(cat==="All")sf.innerHTML='<option value="">- Zote -</option>';else sf.innerHTML='<option value="">- Zote -</option>'+(LISTS[cat]||[]).map(x=>'<option>'+x+'</option>').join("");render();};
+window.updateSub=()=>{let cat=document.getElementById("postCat").value;document.getElementById("postSub").innerHTML=(LISTS[cat]||[]).map(x=>'<option>'+x+'</option>').join("");};window.updateSub();document.getElementById("postCat").addEventListener("change",window.updateSub);
 window.ingiaSasa=async()=>{
-  document.getElementById("loginMsg").innerText="Najaribu...";
-  const name=document.getElementById("myName").value.trim();
-  const phone=document.getElementById("myPhone").value.trim();
-  const pic=window.tempProfilePic || "";
-  const p=document.getElementById("password").value;
-  if(!name||!phone||!p){ alert("Jaza Jina, Namba na Password!"); return; }
-  if(p.length<6){ alert("Password iwe angalau 6, mfano 123456"); return; }
-  const fakeEmail=phone+"@tzjamii.com";
-  try{
-    await signInWithEmailAndPassword(auth,fakeEmail,p);
-    alert("UMEFANIKIWA KUINGIA!");
-  }catch(e){
-    try{
-      const cred=await createUserWithEmailAndPassword(auth,fakeEmail,p);
-      await setDoc(doc(db,"users",cred.user.uid),{name:name,phone:phone,pic:pic,email:fakeEmail});
-      alert("UMESAJILIWA! Karibu "+name);
-    }catch(e2){ alert("KOSA LA FIREBASE: "+e2.message); return; }
-  }
-  location.reload();
-};
-window.doLogout=async()=>{ await signOut(auth); location.reload(); };
-
-onAuthStateChanged(auth,async(user)=>{
-  if(user){
-    currentUser=user;
-    const snap=await getDoc(doc(db,"users",user.uid));
-    myProfile=snap.exists()?snap.data():{};
-    document.getElementById("loginForm").style.display="none";
-    document.getElementById("logoutBtn").style.display="block";
-    document.getElementById("postCard").style.display="block";
-    document.getElementById("userInfo").innerHTML="Karibu <b>"+(myProfile.name||"")+"</b> 👋";
-  }
-});
-
+if(!document.getElementById("agreePolicy").checked){alert("⚠️ Lazima ukubali Sera na Sheria kwanza! Tiki kisanduku cha 'Nakubali Sera na Sheria'");openPolicy();return;}
+const name=document.getElementById("myName").value.trim();const phone=document.getElementById("myPhone").value.trim();const pic=window.tempProfilePic||"";const p=document.getElementById("password").value;
+if(!name||!phone||!p){alert("Jaza Jina, Namba na Password!");return;}if(p.length<6){alert("Password iwe 6+");return;}
+if(hasBannedWord(name)){alert("Jina lina lugha kali, badilisha jina.");return;}
+const fakeEmail=phone+"@tzjamii.com";
+try{await signInWithEmailAndPassword(auth,fakeEmail,p);const snap=await getDoc(doc(db,"users",auth.currentUser.uid));if(!snap.exists()){await setDoc(doc(db,"users",auth.currentUser.uid),{name:name,phone:phone,pic:pic,followers:[],following:[],banned:false,agreedPolicy:true});}alert("UMEFANIKIWA KUINGIA! Karibu TZ JAMII - Tafadhali fuata Sera.");}
+catch(e){try{const cred=await createUserWithEmailAndPassword(auth,fakeEmail,p);await setDoc(doc(db,"users",cred.user.uid),{name:name,phone:phone,pic:pic,followers:[],following:[],banned:false,agreedPolicy:true});alert("UMESAJILIWA! Karibu "+name+" - Ume kubali Sera.");}catch(e2){alert("KOSA: "+e2.message);return;}}
+location.reload();};
+window.doLogout=async()=>{await signOut(auth);location.reload();};
+onAuthStateChanged(auth,async(user)=>{if(user){currentUser=user;const snap=await getDoc(doc(db,"users",user.uid));myProfile=snap.exists()?snap.data():{};if(myProfile.banned){alert("⛔ Akaunti yako IMEFUNGWA na Admin kwa kukiuka Sera (picha za utupu / matusi). Wasiliana na Admin.");await signOut(auth);return;}document.getElementById("loginForm").style.display="none";document.getElementById("logoutBtn").style.display="block";document.getElementById("postCard").style.display="block";document.getElementById("userInfo").innerHTML=(myProfile.pic?'<img class="avatar" src="'+myProfile.pic+'"> ':"")+"Karibu <b>"+(myProfile.name||"")+"</b> • Followers: "+(myProfile.followers?myProfile.followers.length:0);if(myProfile.phone===ADMIN_PHONE){document.getElementById("adminCard").style.display="block";}}});
+async function sendNotif(toUid,msg){if(!toUid||toUid===currentUser.uid)return;await addDoc(collection(db,"notifications"),{toUid:toUid,msg:msg,createdAt:Date.now(),read:false});}
 document.getElementById("postBtn").onclick=async()=>{
-  if(!currentUser){ alert("Ingia kwanza!"); return; }
-  const text=document.getElementById("postText").value.trim();
-  if(!text){ alert("Andika kitu kwanza!"); return; }
-  await addDoc(collection(db,"posts"),{
-    uid:currentUser.uid, name:myProfile.name||"Mtumiaji", pic:myProfile.pic||"",
-    cat:document.getElementById("postCat").value,
-    sub:document.getElementById("postSub").value||"",
-    text:text, media:window.tempPostPic || "",
-    likes:[], createdAt:Date.now(), pinned:false
-  });
-  document.getElementById("postText").value="";
-  window.tempPostPic=""; document.getElementById("postPreview").style.display="none";
-  alert("Post imetumwa!");
-};
-
+if(!currentUser){alert("Ingia kwanza!");return;}
+if(!document.getElementById("agreePost").checked){alert("⚠️ Tiki kwanza: 'Nathibitisha post hii haina picha za utupu wala matusi'");return;}
+const text=document.getElementById("postText").value.trim();if(!text){alert("Andika kitu!");return;}
+const bad=hasBannedWord(text);if(bad){alert("⛔ Post yako imezuiwa! Ina lugha kali: '"+bad+"'. Tafadhali andika kwa heshima, bila matusi. Sera ya TZ JAMII inakataza matusi makali.");return;}
+const type=document.getElementById("postType").value;
+await addDoc(collection(db,"posts"),{uid:currentUser.uid,name:myProfile.name||"Mtumiaji",pic:myProfile.pic||"",cat:document.getElementById("postCat").value,sub:document.getElementById("postSub").value||"",text:text,media:window.tempPostPic||"",isVideo:window.tempPostIsVideo||false,youtube:document.getElementById("postYoutube").value.trim(),likes:[],reports:0,createdAt:Date.now(),status:"pending",type:type,paidAmount:document.getElementById("paidAmount").value||"",paidRef:document.getElementById("paidRef").value||""});
+document.getElementById("postText").value="";window.tempPostPic="";document.getElementById("postPreview").style.display="none";
+alert("Post imetumwa kwa Admin kuthibitisha! Kama ina picha za utupu / matusi itafutwa na utafungiwa.");};
 const q=query(collection(db,"posts"),orderBy("createdAt","desc"));
-onSnapshot(q,(snap)=>{
-  allPosts=[]; snap.forEach(d=>{ allPosts.push({id:d.id,...d.data()}); });
-  render();
-},(err)=>{ document.getElementById("postList").innerHTML="KOSA KUSOMA POST: "+err.message; });
-
-document.getElementById("searchInput").addEventListener("input",(e)=>render(e.target.value));
-document.getElementById("subFilter").addEventListener("change",()=>render());
-
-function render(search=""){
-  const list=document.getElementById("postList");
-  const subF=document.getElementById("subFilter").value;
-  let filtered=allPosts.filter(p=> (currentCat==="All"||p.cat===currentCat) && (!subF||p.sub===subF) && (!search||(p.text||"").toLowerCase().includes(search.toLowerCase())||(p.name||"").toLowerCase().includes(search.toLowerCase())) );
-  if(!filtered.length){ list.innerHTML="<p class='small'>Hakuna post bado. Kuwa wa kwanza kupost!</p>"; return; }
-  list.innerHTML=filtered.map(p=>'<div class="post"><b>'+p.name+'</b> <span class="small">• '+p.cat+' '+(p.sub?"- "+p.sub:"")+'</span><br>'+p.text+(p.media?'<br><img src="'+p.media+'">':"")+'<br><button onclick="likePost(\''+p.id+'\')">❤️ '+(p.likes?p.likes.length:0)+'</button> '+(currentUser&&currentUser.uid===p.uid?'<button onclick="delPost(\''+p.id+'\')">🗑️ Futa</button>':"")+'</div>').join("");
-}
-window.likePost=async(id)=>{
-  if(!currentUser){ alert("Ingia kwanza!"); return; }
-  const ref=doc(db,"posts",id);
-  const snap=await getDoc(ref);
-  let likes=snap.data().likes||[];
-  if(likes.includes(currentUser.uid)) likes=likes.filter(x=>x!==currentUser.uid);
-  else likes.push(currentUser.uid);
-  await updateDoc(ref,{likes:likes});
-};
-window.delPost=async(id)=>{ if(confirm("Futa post hii?")) await deleteDoc(doc(db,"posts",id)); };
+onSnapshot(q,(snap)=>{allPosts=[];snap.forEach(d=>allPosts.push({id:d.id,...d.data()}));render();renderPaidAds();});
+onSnapshot(collection(db,"users"),(snap)=>{allUsers=[];snap.forEach(d=>allUsers.push({id:d.id,...d.data()}));renderUsers();});
+onSnapshot(collection(db,"notifications"),(snap)=>{myNotifs=[];snap.forEach(d=>{const n={id:d.id,...d.data()};if(n.toUid===currentUser?.uid)myNotifs.push(n);});document.getElementById("notifCount").innerText=myNotifs.filter(n=>!n.read).length;});
+onSnapshot(collection(db,"messages"),(snap)=>{myInbox=[];snap.forEach(d=>{const m={id:d.id,...d.data()};if(m.toUid===currentUser?.uid||m.fromUid===currentUser?.uid)myInbox.push(m);});myInbox.sort((a,b)=>b.createdAt-a.createdAt);});
+window.showNotifs=()=>{const box=document.getElementById("notifBox");box.style.display=box.style.display==="none"?"block":"none";box.innerHTML="<b>🔔 Notifications</b>"+(myNotifs.length?myNotifs.slice(0,20).map(n=>'<div class="notif">'+n.msg+'</div>').join(""):"<p class='small'>Hakuna notification</p>");myNotifs.forEach(async n=>{if(!n.read)await updateDoc(doc(db,"notifications",n.id),{read:true});});};
+window.showInbox=()=>{const box=document.getElementById("inboxBox");box.style.display=box.style.display==="none"?"block":"none";box.innerHTML="<b>💬 Inbox</b>"+(myInbox.length?myInbox.slice(0,20).map(m=>'<div class="notif"><b>'+m.fromName+'</b>: '+m.text+'<br><button class="btn2" onclick="replyChat(\''+(m.fromUid===currentUser?.uid?m.toUid:m.fromUid)+'\',\''+m.fromName+'\')">Jibu</button></div>').join(""):"<p class='small'>Hakuna message</p>");};
+window.replyChat=(uid,name)=>{const txt=prompt("Tuma ujumbe kwa "+name+" (usiandike matusi / picha za utupu):");if(txt){if(hasBannedWord(txt)){alert("Ujumbe una lugha kali, umezuiwa.");return;}sendMessage(uid,name,txt);}};
+async function sendMessage(toUid,toName,text){await addDoc(collection(db,"messages"),{toUid:toUid,fromUid:currentUser.uid,fromName:myProfile.name,text:text,createdAt:Date.now()});await sendNotif(toUid,myProfile.name+" amekutumia ujumbe: "+text);alert("Ujumbe umetumwa!");};
+window.chatUser=(uid,name)=>{if(!currentUser){alert("Ingia kwanza!");return;}const txt=prompt("Tuma ujumbe kwa "+name+":");if(txt)sendMessage(uid,name,txt);};
+window.followUser=async(uid,name)=>{if(!currentUser){alert("Ingia kwanza!");return;}const myRef=doc(db,"users",currentUser.uid);const targetRef=doc(db,"users",uid);const mySnap=await getDoc(myRef);let following=mySnap.data().following||[];let isF=following.includes(uid);if(isF){following=following.filter(x=>x!==uid);alert("Ume-Unfollow "+name);}else{following.push(uid);alert("Umemfollow "+name+"!");await sendNotif(uid,myProfile.name+" amekufollow!",myProfile.name);}await updateDoc(myRef,{following:following});const tSnap=await getDoc(targetRef);let followers=tSnap.data().followers||[];if(isF)followers=followers.filter(x=>x!==currentUser.uid);else if(!followers.includes(currentUser.uid))followers.push(currentUser.uid);await updateDoc(targetRef,{followers:followers});};
+window.showMyProfile=()=>{if(!currentUser){alert("Ingia kwanza!");return;}document.getElementById("searchInput").value=myProfile.name;render(myProfile.name);window.scrollTo(0,0);};
+function renderPaidAds(){const box=document.getElementById("paidAdsTop");const ads=allPosts.filter(p=>p.type==="paid_ad"&&p.status==="approved");box.innerHTML=ads.slice(0,3).map(p=>'<div style="background:#fff;padding:8px;border-radius:10px;margin:5px"><span class="badgePaid">💰 TANGAZO</span> <b>'+p.name+'</b>: '+p.text+(p.media?'<br><img src="'+p.media+'" style="width:100%">':"")+'</div>').join("");};
+function renderUsers(){const el=document.getElementById("userList");el.innerHTML=allUsers.map(u=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid #eee">'+(u.pic?'<img class="avatar" src="'+u.pic+'"> ':"")+'<b style="cursor:pointer" onclick="viewProfile(\''+u.id+'\')">'+u.name+'</b> <span class="small">'+(u.followers?u.followers.length:0)+' followers</span><span><button class="btn2" onclick="followUser(\''+u.id+'\',\''+u.name+'\')">Follow</button> <button class="btn2" onclick="chatUser(\''+u.id+'\',\''+u.name+'\')">💬</button></span></div>').join("");};
+window.viewProfile=(uid)=>{const u=allUsers.find(x=>x.id===uid);if(!u)return;alert("👤 "+u.name+"\nFollowers: "+(u.followers?u.followers.length:0));document.getElementById("searchInput").value=u.name;render(u.name);};
+document.getElementById("searchInput").addEventListener("input",(e)=>render(e.target.value));document.getElementById("subFilter").addEventListener("change",()=>render());
+function render(search=""){const list=document.getElementById("postList");const subF=document.getElementById("subFilter").value;let filtered=allPosts.filter(p=>{if(myProfile.phone!==ADMIN_PHONE&&p.status!=="approved")return false;return (currentCat==="All"||p.cat===currentCat)&&(!subF||p.sub===subF)&&(!search||(p.text||"").toLowerCase().includes(search.toLowerCase())||(p.name||"").toLowerCase().includes(search.toLowerCase()));});if(!filtered.length){list.innerHTML="<p class='small'>Hakuna post iliyoidhinishwa bado. Admin a-Approve.</p>";return;}list.innerHTML=filtered.map(p=>'<div class="post">'+(p.pic?'<img class="avatar" src="'+p.pic+'"> ':"")+'<b style="cursor:pointer" onclick="viewProfile(\''+p.uid+'\')">'+p.name+'</b> '+(p.type==="paid_ad"?'<span class="badgePaid">💰 TANGAZO LILILOLIPIWA</span>':"")+' '+(p.status==="pending"?'<span class="badge">⏳ INASUBIRI ADMIN</span>':"")+' '+(p.reports&&p.reports>=2?'<span style="background:#c00;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">🚩 IMERIPOTIWA '+(p.reports||0)+'x - ANGALIA SERA</span>':"")+'<span class="small"> • '+p.cat+' '+(p.sub?"- "+p.sub:"")+'</span><br>'+p.text+(p.media?(p.isVideo?'<br><video src="'+p.media+'" controls></video>':'<br><img src="'+p.media+'">'):"")+(p.youtube?'<br><a href="'+p.youtube+'" target="_blank">▶️ YouTube</a>':"")+'<br><button class="btn2" onclick="likePost(\''+p.id+'\')">❤️ '+(p.likes?p.likes.length:0)+'</button> <button class="btn2" onclick="toggleComments(\''+p.id+'\')">💬 Comment</button> <button class="btn2" style="background:#ffe0e0" onclick="reportPost(\''+p.id+'\')">🚩 Report - Inavunja Sera</button> '+(currentUser&&currentUser.uid===p.uid?'<button class="btn2" onclick="delPost(\''+p.id+'\')">🗑️</button>':"")+' '+(myProfile.phone===ADMIN_PHONE?'<button class="btn2" style="background:#c00;color:#fff" onclick="adminDelPost(\''+p.id+'\')">🛡️ Futa</button>':"")+'<div id="c-'+p.id+'" style="display:none"><input id="ci-'+p.id+'" placeholder="Andika comment kwa heshima..."><button class="btn2" onclick="addComment(\''+p.id+'\')">Tuma</button><div id="cl-'+p.id+'"></div></div></div>').join("");filtered.forEach(p=>loadComments(p.id));}
+window.toggleComments=(id)=>{const el=document.getElementById("c-"+id);el.style.display=el.style.display==="none"?"block":"none";};
+async function loadComments(postId){const q2=query(collection(db,"comments"),where("postId","==",postId),orderBy("createdAt","asc"));onSnapshot(q2,(snap)=>{let html="";snap.forEach(d=>{const c=d.data();html+='<div class="small"><b>'+c.name+'</b>: '+c.text+' '+(myProfile.phone===ADMIN_PHONE?'<button onclick="delComment(\''+d.id+'\')">🗑️</button>':"")+'</div>';});const el=document.getElementById("cl-"+postId);if(el)el.innerHTML=html;});}
+window.addComment=async(postId)=>{if(!currentUser){alert("Ingia kwanza!");return;}const inp=document.getElementById("ci-"+postId);const txt=inp.value.trim();if(!txt)return;if(hasBannedWord(txt)){alert("⛔ Comment imezuiwa! Ina lugha kali. Andika kwa heshima.");return;}const post=allPosts.find(p=>p.id===postId);await addDoc(collection(db,"comments"),{postId:postId,uid:currentUser.uid,name:myProfile.name,text:txt,createdAt:Date.now()});inp.value="";if(post)await sendNotif(post.uid,myProfile.name+" amecomment: "+txt);};
+window.likePost=async(id)=>{if(!currentUser){alert("Ingia kwanza!");return;}const ref=doc(db,"posts",id);const snap=await getDoc(ref);let likes=snap.data().likes||[];let liked=likes.includes(currentUser.uid);if(liked)likes=likes.filter(x=>x!==currentUser.uid);else{likes.push(currentUser.uid);if(snap.data().uid!==currentUser.uid)await sendNotif(snap.data().uid,myProfile.name+" amekulike ❤️");}await updateDoc(ref,{likes:likes});};
+window.reportPost=async(id)=>{if(!currentUser){alert("Ingia kwanza ili ureport!");return;}const reason=prompt("Kwa nini unareport post hii?\n1 = Picha za utupu / ngono\n2 = Matusi makali\n3 = Uongo / Utapeli\n4 = Nyingine\nAndika namba:");if(!reason)return;const ref=doc(db,"posts",id);const snap=await getDoc(ref);let rep=(snap.data().reports||0)+1;await updateDoc(ref,{reports:rep});await sendNotif("ADMIN", "🚩 Post imeripotiwa "+rep+"x - Sababu: "+reason+" - Angalia Admin Panel", "System");alert("Asante! Report imetumwa kwa Admin. Kama post inavunja Sera itafutwa na mhusika atafungiwa.");};
+window.delPost=async(id)=>{if(confirm("Futa post hii?"))await deleteDoc(doc(db,"posts",id));};
+window.adminDelPost=async(id)=>{if(confirm("Admin: Futa post hii?"))await deleteDoc(doc(db,"posts",id));};
+window.delComment=async(id)=>{if(confirm("Futa comment hii?"))await deleteDoc(doc(db,"comments",id));};
+window.showAdmin=()=>{if(!currentUser||myProfile.phone!==ADMIN_PHONE){alert("Wewe si Admin!");return;}const box=document.getElementById("adminBox");box.style.display=box.style.display==="none"?"block":"none";const pending=allPosts.filter(p=>p.status==="pending");box.innerHTML="<b>⏳ Zinasubiri ("+pending.length+")</b>"+pending.map(p=>'<div class="card"><b>'+p.name+'</b> - '+p.cat+' '+(p.type==="paid_ad"?'<span class="badgePaid">💰 '+p.paidAmount+' Ref:'+p.paidRef+'</span>':"")+' '+(p.reports?'<span style="background:#c00;color:#fff;padding:2px 8px;border-radius:10px">🚩 Reports: '+p.reports+'</span>':"")+'<br>'+p.text+(p.media?'<br><img src="'+p.media+'" style="width:100%">':"")+'<br><button class="btn" onclick="approvePost(\''+p.id+'\')">✅ APPROVE</button> <button class="btn" style="background:#c00" onclick="adminDelPost(\''+p.id+'\')">❌ KATA / FUTA - Inavunja Sera</button></div>').join("")+"<b>🚩 Post Zilizoripotiwa</b>"+allPosts.filter(p=>p.reports>0).map(p=>'<div class="card"><b>'+p.name+'</b>: '+p.text+' - Reports: '+p.reports+'<br><button class="btn" style="background:#c00" onclick="adminDelPost(\''+p.id+'\')">Futa</button> <button class="btn2" onclick="banUserByPost(\''+p.uid+'\')">⛔ Ban Mhusika</button></div>').join("")+"<b>👥 Watumiaji - Ban / Fungua</b>"+allUsers.map(u=>'<div class="card"><b>'+u.name+'</b> - '+u.phone+' - '+(u.banned?"⛔ AMEFUNGWA":"✅ OK")+'<br><button class="btn2" onclick="banUser(\''+u.id+'\',true)">⛔ BAN - Amevunja Sera</button> <button class="btn2" onclick="banUser(\''+u.id+'\',false)">🔓 FUNGUA</button> <button class="btn2" style="background:#c00;color:#fff" onclick="delUser(\''+u.id+'\')">🗑️ FUTA</button></div>').join("");};
+window.approvePost=async(id)=>{await updateDoc(doc(db,"posts",id),{status:"approved"});alert("Ime-Approve!");const snap=await getDoc(doc(db,"posts",id));await sendNotif(snap.data().uid,"✅ Admin ame-Approve post yako!", "Admin");};
+window.banUser=async(uid,ban)=>{await updateDoc(doc(db,"users",uid),{banned:ban});alert(ban?"Mtu amefungwa kwa kukiuka Sera!":"Mtu amefunguliwa!");};
+window.banUserByPost=async(uid)=>{await updateDoc(doc(db,"users",uid),{banned:true});alert("Mhusika amefungwa!");};
+window.delUser=async(uid)=>{if(confirm("Futa mtumiaji huyu?"))await deleteDoc(doc(db,"users",uid));};
 </script></body></html>
