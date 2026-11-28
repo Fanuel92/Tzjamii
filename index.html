@@ -52,15 +52,16 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseConfig = {
-  apiKey: "WEKA APIKEY YAKO - ile kwenye picha yako inayoanza na AIzaSyC_bMAM3",
+  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
   authDomain: "tzjamii.firebaseapp.com",
   projectId: "tzjamii",
   storageBucket: "tzjamii.firebasestorage.app",
   messagingSenderId: "210377984835",
-  appId: "WEKA APPID YAKO - ile inayoanza na 1:210377984835:web:cfc328a7"
+  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
+  measurementId: "G-KZ5M48VLDJ"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
