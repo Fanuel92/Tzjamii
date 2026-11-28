@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TZ JAMII V4.7 - Ads Yoyote</title>
+<title>TZ JAMII V4.8 - Ads Salama</title>
 <style>
 body{margin:0;font-family:sans-serif;background:#eef2f5;padding-bottom:70px}
 header{background:#0a7a3a;color:#fff;padding:12px;text-align:center;font-weight:900;font-size:20px;position:sticky;top:0;z-index:10}
@@ -26,6 +26,7 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 .modalInner{background:#fff;padding:15px;border-radius:12px;max-width:500px;margin:20px auto}
 .lockBox{background:#fff;text-align:center;padding:20px;border-radius:12px;margin:10px}
 .adminAdsBox{background:#e8f5e9;border:2px solid #0a7a3a;padding:12px;border-radius:12px;margin:10px 0}
+.adsFrame{width:100%;border:0;overflow:hidden;background:#fff;border-radius:10px}
 </style></head><body>
 <header>🇹🇿 TZ JAMII</header>
 <div class="card" id="authCard"><b>Karibu TZ JAMII 🇹🇿</b><p class="small">Ingia ili uone Post, Soko, Michezo, Chat, Matangazo na kila kitu.</p>
@@ -42,8 +43,13 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 <div id="mainContent" style="display:none">
 <div class="topbar"><span id="userInfo">Karibu</span><span><button class="btn2" onclick="showNotifs()">🔔 <span id="notifCount">0</span></button> <button class="btn2" onclick="showInbox()">💬 Inbox</button> <button class="btn2" onclick="openPolicy()">📜 Sera</button></span></div>
 
-<!-- 📢 ADS - WATUMIAJI WATAONA ADS TU HAPA, HAWAONI CODE -->
-<div class="card" id="publicAdsBox" style="text-align:center;background:#fffbe6;display:none"><b>📢 MATANGAZO</b><div id="publicAdsContent"></div></div>
+<!-- 📢 ADS SALAMA - NDANI YA IFRAME, HAIFUTI UKURASA TENA, INA KITUFE CHA KUFUNGA -->
+<div class="card" id="publicAdsBox" style="text-align:center;background:#fffbe6;display:none">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>📢 MATANGAZO</b><button class="btn2" onclick="closeAds()">✖ Funga Ads / Rudi</button></div>
+<iframe id="adsFrame" class="adsFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-top-navigation" style="height:120px"></iframe>
+<div id="publicAdsContent" style="display:none"></div>
+<button class="btn2" onclick="showAdsAgain()" id="showAdsBtn" style="display:none">📢 Onyesha Ads Tena</button>
+</div>
 
 <div class="card" style="text-align:center;background:#fffbe6"><b>📢 MATANGAZO YA KULIPIA YA WATUMIAJI</b><div id="paidAdsTop"></div></div>
 <div class="tabs" id="tabs"></div>
@@ -69,15 +75,7 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyC_bMAM3_DGUi6EBOBsrPzPSUroY4jUubo",
-  authDomain: "tzjamii.firebaseapp.com",
-  projectId: "tzjamii",
-  storageBucket: "tzjamii.firebasestorage.app",
-  messagingSenderId: "210377984835",
-  appId: "1:210377984835:web:cfc328a7c3e9e389f2fdf6",
-  measurementId: "G-KZ5M48VLDJ"
-};
+const firebaseConfig = { apiKey: "WEKA_APIKEY_YAKO_HAPA", authDomain: "tzjamii.firebaseapp.com", projectId: "tzjamii", storageBucket: "tzjamii.firebasestorage.app", messagingSenderId: "210377984835", appId: "WEKA_APPID_YAKO_HAPA" };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -126,19 +124,21 @@ document.getElementById("mainContent").style.display="block";document.getElement
 document.getElementById("userInfo").innerHTML=(myProfile.pic?'<img class="avatar" src="'+myProfile.pic+'"> ':"")+"Karibu <b>"+(myProfile.name||"")+"</b> • Followers: "+(myProfile.followers?myProfile.followers.length:0);
 if(isAdmin()){document.getElementById("adminCard").style.display="block";document.getElementById("adminNavBtn").style.display="block";}else{document.getElementById("adminCard").style.display="none";document.getElementById("adminNavBtn").style.display="none";}
 }else{document.getElementById("mainContent").style.display="none";document.getElementById("lockBox").style.display="block";}});
-// ===== ADS - CODE YOYOTE - INAHIFADHIWA KWENYE DATABASE, ADMIN TU ANAWEZA KUWEKA =====
+// ===== ADS SALAMA - NDANI YA IFRAME - HAIFUTI UKURASA TENA =====
 function renderAdsCode(){
-const box=document.getElementById("publicAdsBox");const content=document.getElementById("publicAdsContent");
+const box=document.getElementById("publicAdsBox");const frame=document.getElementById("adsFrame");const showBtn=document.getElementById("showAdsBtn");
 if(!savedAdsCode){box.style.display="none";return;}
-box.style.display="block";content.innerHTML="";
-const temp=document.createElement("div");temp.innerHTML=savedAdsCode;
-Array.from(temp.childNodes).forEach(node=>{if(node.tagName==="SCRIPT"){const s=document.createElement("script");if(node.src)s.src=node.src;if(node.textContent)s.textContent=node.textContent;Array.from(node.attributes).forEach(a=>s.setAttribute(a.name,a.value));content.appendChild(s);}else{content.appendChild(node.cloneNode(true));}});
-const scripts=content.querySelectorAll("script");scripts.forEach(old=>{if(old.parentNode&&!old.src&&old.textContent.includes("adsbygoogle")){try{eval(old.textContent);}catch(e){}}});
+box.style.display="block";frame.style.display="block";showBtn.style.display="none";
+const html="<html><head><meta name='viewport' content='width=device-width,initial-scale=1'><style>body{margin:0;font-family:sans-serif;text-align:center}img{max-width:100%}a{word-break:break-all}</style></head><body>"+savedAdsCode+"</body></html>";
+frame.srcdoc=html;
+frame.onload=()=>{try{const h=frame.contentDocument.body.scrollHeight;frame.style.height=Math.min(Math.max(h+10,90),400)+"px";}catch(e){frame.style.height="150px";}};
 }
+window.closeAds=()=>{document.getElementById("adsFrame").style.display="none";document.getElementById("showAdsBtn").style.display="inline-block";};
+window.showAdsAgain=()=>{document.getElementById("adsFrame").style.display="block";document.getElementById("showAdsBtn").style.display="none";};
 onSnapshot(doc(db,"settings","ads"),(snap)=>{if(snap.exists()){savedAdsCode=snap.data().code||"";renderAdsCode();}});
-window.saveAdsCode=async()=>{if(!isAdmin())return;const code=document.getElementById("adsCodeInput").value.trim();if(!code){alert("Bandika code ya Ads kwanza!");return;}await setDoc(doc(db,"settings","ads"),{code:code,updatedAt:Date.now()});alert("✅ Code ya Ads imehifadhiwa! Sasa Ads zitaonekana kwa watumiaji wote.");};
+window.saveAdsCode=async()=>{if(!isAdmin())return;const code=document.getElementById("adsCodeInput").value.trim();if(!code){alert("Bandika code ya Ads kwanza!");return;}if(code.includes("document.write")){if(!confirm("⚠️ Code hii ina document.write ambayo inaweza kuleta shida. Uhakika unataka kuihifadhi? Tumia banner / Adsterra badala yake."))return;}await setDoc(doc(db,"settings","ads"),{code:code,updatedAt:Date.now()});alert("✅ Code ya Ads imehifadhiwa! Sasa Ads zitaonekana kwa watumiaji wote juu, na maudhui yatabaki chini yake.");};
 window.deleteAdsCode=async()=>{if(!isAdmin())return;if(confirm("Futa code ya Ads?")){await setDoc(doc(db,"settings","ads"),{code:"",updatedAt:Date.now()});alert("Ads zimefutwa.");}};
-window.testAdsCode=()=>{const code=document.getElementById("adsCodeInput").value.trim();if(!code){alert("Bandika code kwanza ili kuijaribu!");return;}savedAdsCode=code;renderAdsCode();alert("Jaribio: Ads zimeonekana juu? Kama ndio, bonyeza HIFADHI.");};
+window.testAdsCode=()=>{const code=document.getElementById("adsCodeInput").value.trim();if(!code){alert("Bandika code kwanza ili kuijaribu!");return;}if(code.includes("document.write")){alert("⛔ Usitumie code yenye document.write! Itaharibu ukurasa. Tumia banner au code ya Adsterra.");return;}savedAdsCode=code;renderAdsCode();alert("Jaribio: Ads zimeonekana juu? Chini yake maudhui yapo? Kama ndio, bonyeza HIFADHI.");};
 async function sendNotif(toUid,msg){if(!toUid||toUid===currentUser.uid)return;await addDoc(collection(db,"notifications"),{toUid:toUid,msg:msg,createdAt:Date.now(),read:false});}
 document.getElementById("postBtn").onclick=async()=>{
 if(!currentUser){alert("Ingia kwanza!");return;}
@@ -176,7 +176,7 @@ window.delPost=async(id)=>{if(confirm("Futa post hii?"))await deleteDoc(doc(db,"
 window.adminDelPost=async(id)=>{if(!isAdmin())return;if(confirm("Admin: Futa post hii?"))await deleteDoc(doc(db,"posts",id));};
 window.delComment=async(id)=>{if(!isAdmin())return;if(confirm("Futa comment hii?"))await deleteDoc(doc(db,"comments",id));};
 window.showAdmin=()=>{if(!isAdmin()){return;}if(!adminUnlocked){const pin=prompt("🛡️ ADMIN - Ingiza PIN ya siri:");if(pin!==ADMIN_PIN){alert("⛔ PIN si sahihi!");return;}adminUnlocked=true;}const box=document.getElementById("adminBox");box.style.display=box.style.display==="none"?"block":"none";const pending=allPosts.filter(p=>p.status==="pending");box.innerHTML=
-"<div class='adminAdsBox'><b>📢 CODE YOYOTE YA ADS - SIRI YA ADMIN TU</b><p class='small'>Inaruhusu code yoyote: Google AdSense, Adsterra, PropellerAds, Monetag, PopAds, au Banner ya mtu aliyekulipa.</p><p class='small'><b>Mifano inayokubalika:</b><br>• &lt;script&gt;...code ya AdSense / Adsterra...&lt;/script&gt;<br>• &lt;a href='https://... '&gt;&lt;img src='https://.../banner.jpg'&gt;&lt;/a&gt;<br>• &lt;iframe src='https://...'&gt;&lt;/iframe&gt;<br>• Code yoyote ya HTML / JavaScript</p><textarea id='adsCodeInput' rows='6' placeholder='Bandika code YOYOTE ya Ads hapa...&#10;&#10;Mfano Adsterra: &lt;script src=...&gt;&lt;/script&gt;&#10;Mfano Banner: &lt;a href=...&gt;&lt;img src=...&gt;&lt;/a&gt;'>"+savedAdsCode+"</textarea><button class='btn' onclick='testAdsCode()'>👁️ JARIBU KWANZA - Ona kama Ads inaonekana</button><button class='btn' style='margin-top:8px' onclick='saveAdsCode()'>💾 HIFADHI CODE YA ADS - Itaonekana kwa wote</button><button class='btn' style='background:#c00;margin-top:8px' onclick='deleteAdsCode()'>🗑️ FUTA ADS</button><p class='small'>Hali: "+(savedAdsCode?"✅ Code imehifadhiwa, Ads zinaonekana kwa wote":"❌ Hakuna Ads bado")+"</p></div>"
+"<div class='adminAdsBox'><b>📢 CODE YOYOTE YA ADS - SIRI YA ADMIN TU</b><p class='small'>Inaruhusu code yoyote: AdSense, Adsterra, PropellerAds, Monetag, Banner.</p><p class='small'>⚠️ USITUMIE code yenye <b>document.write</b> - inaharibu ukurasa. Tumia banner au Adsterra.</p><textarea id='adsCodeInput' rows='6' placeholder='Bandika code YOYOTE ya Ads hapa...'>"+savedAdsCode+"</textarea><button class='btn' onclick='testAdsCode()'>👁️ JARIBU KWANZA</button><button class='btn' style='margin-top:8px' onclick='saveAdsCode()'>💾 HIFADHI CODE YA ADS</button><button class='btn' style='background:#c00;margin-top:8px' onclick='deleteAdsCode()'>🗑️ FUTA ADS</button><p class='small'>Hali: "+(savedAdsCode?"✅ Code imehifadhiwa":"❌ Hakuna Ads bado")+"</p></div>"
 +"<b>⏳ Matangazo ya Kulipia Yanasubiri ("+pending.length+")</b>"+pending.map(p=>'<div class="card"><b>'+p.name+'</b> - '+p.cat+' '+(p.type==="paid_ad"?'<span class="badgePaid">💰 '+p.paidAmount+' Ref:'+p.paidRef+'</span>':"")+'<br>'+p.text+(p.media?'<br><img src="'+p.media+'" style="width:100%">':"")+'<br><button class="btn" onclick="approvePost(\''+p.id+'\')">✅ APPROVE TANGAZO</button> <button class="btn" style="background:#c00" onclick="adminDelPost(\''+p.id+'\')">❌ KATA / FUTA</button></div>').join("")+"<b>👥 Watumiaji</b>"+allUsers.map(u=>'<div class="card"><b>'+u.name+'</b> - '+u.phone+' - '+(u.banned?"⛔ AMEFUNGWA":"✅ OK")+'<br><button class="btn2" onclick="banUser(\''+u.id+'\',true)">⛔ BAN</button> <button class="btn2" onclick="banUser(\''+u.id+'\',false)">🔓 FUNGUA</button> <button class="btn2" style="background:#c00;color:#fff" onclick="delUser(\''+u.id+'\')">🗑️ FUTA</button></div>').join("");};
 window.approvePost=async(id)=>{if(!isAdmin())return;await updateDoc(doc(db,"posts",id),{status:"approved"});alert("Tangazo lime-Approve!");const snap=await getDoc(doc(db,"posts",id));await sendNotif(snap.data().uid,"✅ Admin ame-Approve tangazo lako!");};
 window.banUser=async(uid,ban)=>{if(!isAdmin())return;await updateDoc(doc(db,"users",uid),{banned:ban});alert(ban?"Mtu amefungwa!":"Mtu amefunguliwa!");};
