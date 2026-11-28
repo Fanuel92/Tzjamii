@@ -23,7 +23,9 @@ input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd
 <div id="loginForm">
 <input id="myName" placeholder="👤 Jina lako - mfano Fanuel Kisoma">
 <input id="myPhone" placeholder="📞 Namba ya Simu - mfano 0628285096">
-<input id="myPic" placeholder="🖼️ Link ya Picha yako">
+<input type="file" id="myPicFile" accept="image/*">
+<img id="myPicPreview" style="display:none;width:70px;height:70px;border-radius:50%;object-fit:cover;margin-top:5px">
+<p class="small">Chagua picha kutoka kwenye simu yako</p>
 <input id="password" type="password" placeholder="🔒 Password">
 <button class="btn" onclick="ingiaSasa()">INGIA / JIANDIKISHE</button>
 <p id="loginMsg" class="small"></p>
