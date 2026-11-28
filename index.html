@@ -140,16 +140,6 @@ window.saveProfile=async()=>{
   await setDoc(doc(db,"users",currentUser.uid),{name:document.getElementById("myName").value, pic:document.getElementById("myPic").value, email:currentUser.email},{merge:true});
   alert("Profile imehifadhiwa!"); location.reload();
 };
-
-  catch(err1){
-    alert("Kuingia kumeshindikana: "+err1.message+" - Sasa najaribu kukusajili mpya...");
-    try{await createUserWithEmailAndPassword(auth,e,p); alert("UMESAJILIWA MPYA!"); location.reload();}
-    catch(err2){ alert("KOSA KUBWA: "+err2.message); }
-  }
-};{
-  const e=document.getElementById("email").value, p=document.getElementById("password").value;
-  try{await signInWithEmailAndPassword(auth,e,p)}catch{try{await createUserWithEmailAndPassword(auth,e,p)}catch(e2){document.getElementById("loginMsg").innerText=e2.message}}
-};
 document.getElementById("postBtn").onclick=async()=>{
   if(!currentUser) return alert("Ingia kwanza");
   await addDoc(collection(db,"posts"),{text:document.getElementById("postText").value, media:document.getElementById("postMedia").value, cat:document.getElementById("postCat").value, sub:document.getElementById("postSub").value, uid:currentUser.uid, name:myProfile.name||currentUser.email, pic:myProfile.pic||"", likes:[], pinned:0, createdAt:serverTimestamp()});
