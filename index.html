@@ -108,9 +108,7 @@ window.ingiaSasa = async () => {
   }
   location.reload();
 };
-// ... hapa chini ndio code nyingine yako inaendelea ...
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); const db = getFirestore(app);
+
 let currentUser=null, myProfile={}, allPosts=[], currentCat='All';
 const ADMIN_EMAIL="kisomafanuel2@gmail.com";
 
